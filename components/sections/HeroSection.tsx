@@ -33,16 +33,8 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button
-              href="/contact"
-              variant="primary"
-              className="transform transition-transform duration-200 hover:-translate-y-0.5 hover:scale-105"
-              aria-label="Request a Pilot — start a pilot program"
-              title="Request a Pilot"
-            >
-              Request a Pilot
-            </Button>
-            <Button href="/services" variant="outline" className="opacity-90">See How It Works</Button>
+            <Button href="/contact">Schedule a workflow review</Button>
+            <Button href="/services" variant="outline">Explore services</Button>
           </div>
         </div>
 
