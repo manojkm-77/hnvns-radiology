@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 export function CTASection() {
   const router = useRouter();
 
-  const handleVacancyClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleVacancyClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
     event.preventDefault();
     const button = event.currentTarget;
     button.classList.add('btn-clicked');
@@ -26,7 +26,7 @@ export function CTASection() {
           Tell us where your team has a gap. We will match you with verified candidates and have a shortlist ready within 18 hours.
         </p>
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button href="/contact" className="vacancy-button" onClick={handleVacancyClick}>
+          <Button href="/contact" className="vacancy-button hero-cta-button" onClick={handleVacancyClick}>
             Post a Vacancy
           </Button>
           <Button href="/register" variant="outline">Register as a Candidate</Button>
