@@ -5,7 +5,21 @@ import gsap from 'gsap';
 import { FadeUp } from '@/components/animations/FadeUp';
 import { Button } from '@/components/ui/Button';
 import { JobCard } from '@/components/ui/JobCard';
-import { jobs } from '@/lib/data';
+type JobType = {
+  id: string;
+  title: string;
+  hospital: string;
+  location: string;
+  type: string;
+  salary: string;
+  postedAt: string;
+  specialization: string;
+  status: string;
+};
+
+type JobsPageClientProps = {
+  initialJobs: JobType[];
+};
 
 type FilterState = {
   keyword: string;
@@ -21,19 +35,19 @@ const emptyFilters: FilterState = {
   type: 'All Types'
 };
 
-export function JobsPageClient() {
+export function JobsPageClient({ initialJobs }: JobsPageClientProps) {
   const [filters, setFilters] = useState<FilterState>(emptyFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(emptyFilters);
   const [filterToken, setFilterToken] = useState(0);
 
-  const specializations = useMemo(() => ['All Specializations', ...Array.from(new Set(jobs.map((job) => job.specialization)))], []);
-  const locations = useMemo(() => ['All Locations', ...Array.from(new Set(jobs.map((job) => job.location)))], []);
+  const specializations = useMemo(() => ['All Specializations', ...Array.from(new Set(initialJobs.map((job) => job.specialization)))], [initialJobs]);
+  const locations = useMemo(() => ['All Locations', ...Array.from(new Set(initialJobs.map((job) => job.location)))], [initialJobs]);
   const types = ['All Types', 'Full-Time', 'Contract', 'Locum'];
 
   const filteredJobs = useMemo(() => {
     const keyword = appliedFilters.keyword.trim().toLowerCase();
 
-    return jobs.filter((job) => {
+    return initialJobs.filter((job) => {
       const searchableText = `${job.title} ${job.hospital} ${job.location} ${job.specialization}`.toLowerCase();
       const matchesKeyword = !keyword || searchableText.includes(keyword);
       const matchesSpecialization = appliedFilters.specialization === 'All Specializations' || job.specialization === appliedFilters.specialization;
@@ -42,7 +56,7 @@ export function JobsPageClient() {
 
       return matchesKeyword && matchesSpecialization && matchesLocation && matchesType;
     });
-  }, [appliedFilters]);
+  }, [appliedFilters, initialJobs]);
 
   useEffect(() => {
     const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-job-card]'));
@@ -162,7 +176,7 @@ export function JobsPageClient() {
           <div>
             <h2 className="text-2xl font-light tracking-[-0.04em] text-text">Open roles</h2>
             <p className="mt-2 text-sm text-muted">
-              Showing {filteredJobs.length} of {jobs.length} jobs
+              Showing {filteredJobs.length} of {initialJobs.length} jobs
               {activeFilterCount > 0 ? ` with ${activeFilterCount} active filters` : ''}.
             </p>
           </div>

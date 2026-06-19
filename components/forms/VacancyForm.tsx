@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
-
-const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? 'https://formspree.io/f/YOUR_ID';
+import { submitVacancyAction } from '@/app/actions/vacancy';
 
 const initialForm = {
   hospitalName: '',
@@ -75,21 +74,16 @@ export function VacancyForm() {
     setSubmitError('');
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      });
+      const result = await submitVacancyAction(values);
 
-      if (!response.ok) throw new Error('Form submission failed');
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       setSubmitted(true);
       setValues(initialForm);
-    } catch {
-      setSubmitError('Something went wrong. Please try again or contact partnerships directly.');
+    } catch (err) {
+      setSubmitError((err as Error).message || 'Something went wrong. Please try again or contact partnerships directly.');
     } finally {
       setIsSubmitting(false);
     }

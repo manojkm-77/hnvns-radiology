@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Job {
+  id             String    @id @default(uuid())
+  title          String
+  hospital       String
+  location       String
+  type           String    // Full-Time, Contract, Locum
+  salary         String
+  postedAt       DateTime  @default(now())
+  specialization String
+  status         String    @default("open") // featured, urgent, new, open
+  description    String?
+  responsibilities String[]
+  requirements   String[]
+  benefits       String[]
+}
+
+model Candidate {
+  id             String   @id @default(uuid())
+  name           String
+  email          String
+  phone          String
+  specialization String
+  availability   String
+  resumeUrl      String?
+  registeredAt   DateTime @default(now())
+}
+
+model VacancyRequest {
+  id             String   @id @default(uuid())
+  hospitalName   String
+  contactPerson  String
+  email          String
+  phone          String
+  specialization String
+  roleType       String
+  urgency        String
+  startDate      DateTime
+  requirements   String?
+  submittedAt    DateTime @default(now())
+}

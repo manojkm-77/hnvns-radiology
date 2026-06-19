@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-
-const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? 'https://formspree.io/f/YOUR_ID';
+import { registerCandidateAction } from '@/app/actions/candidate';
 
 const initialForm = {
   fullName: '',
@@ -116,39 +115,42 @@ export function CandidateRegistrationForm() {
     setSubmitError('');
 
     try {
-      const formData = new FormData();
-
-      formData.append('fullName', values.fullName);
-      formData.append('email', values.email);
-      formData.append('phone', values.phone);
-      formData.append('specialization', values.specialization);
-      formData.append('experience', values.experience);
-      formData.append('currentLocation', values.currentLocation);
-      formData.append('preferredLocation', values.preferredLocation);
-      formData.append('employmentType', values.employmentType.join(', '));
-      formData.append('expectedSalary', values.expectedSalary);
-
+      // 1. Upload CV to Vercel Blob via our API endpoint
+      let resumeUrl = '';
       if (values.cv) {
-        formData.append('cv', values.cv, values.cv.name);
+        const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(values.cv.name)}`, {
+          method: 'POST',
+          body: values.cv,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('CV upload failed. Please try again.');
+        }
+
+        const uploadData = await uploadResponse.json();
+        resumeUrl = uploadData.url;
       }
 
-      if (values.linkedIn) formData.append('linkedIn', values.linkedIn);
-      if (values.message) formData.append('message', values.message);
+      // 2. Register candidate profile in database using server action
+      const formattedAvailability = `Experience: ${values.experience} | Prefers: ${values.employmentType.join(', ')} | Expected: ${values.expectedSalary} ${values.linkedIn ? `| LinkedIn: ${values.linkedIn}` : ''} ${values.message ? `| Message: ${values.message}` : ''}`;
 
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json'
-        },
-        body: formData
+      const result = await registerCandidateAction({
+        name: values.fullName,
+        email: values.email,
+        phone: values.phone,
+        specialization: values.specialization,
+        availability: formattedAvailability,
+        resumeUrl: resumeUrl,
       });
 
-      if (!response.ok) throw new Error('Form submission failed');
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       setSubmitted(true);
       setValues(initialForm);
-    } catch {
-      setSubmitError('Something went wrong. Please try again.');
+    } catch (err) {
+      setSubmitError((err as Error).message || 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

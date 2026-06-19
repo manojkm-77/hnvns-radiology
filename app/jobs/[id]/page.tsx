@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { jobs } from '@/lib/data';
+import { prisma } from '@/lib/prisma';
+import { jobs as staticJobs } from '@/lib/data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { RevealSection } from '@/components/animations/RevealSection';
@@ -12,14 +13,59 @@ type Props = {
   };
 };
 
+function formatRelativeTime(dateInput: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - dateInput.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 60) {
+    return diffMins <= 1 ? 'Just now' : `${diffMins} minutes ago`;
+  } else if (diffHours < 24) {
+    return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+  } else {
+    return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+  }
+}
+
+async function getJobById(id: string) {
+  try {
+    const dbJob = await prisma.job.findUnique({
+      where: { id },
+    });
+    if (dbJob) {
+      return {
+        ...dbJob,
+        postedAt: formatRelativeTime(new Date(dbJob.postedAt)),
+      };
+    }
+  } catch (error) {
+    console.warn('Database findUnique failed, falling back to static jobs:', error);
+  }
+  return staticJobs.find((j) => j.id === id) || null;
+}
+
 export async function generateStaticParams() {
-  return jobs.map((job) => ({
+  try {
+    const dbJobs = await prisma.job.findMany({
+      select: { id: true }
+    });
+    if (dbJobs.length > 0) {
+      return dbJobs.map((job) => ({
+        id: job.id,
+      }));
+    }
+  } catch (error) {
+    console.warn('generateStaticParams fallback:', error);
+  }
+  return staticJobs.map((job) => ({
     id: job.id,
   }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const job = jobs.find((j) => j.id === params.id);
+  const job = await getJobById(params.id);
   if (!job) {
     return {
       title: 'Job Not Found | HNVNS',
@@ -31,8 +77,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function JobDetailPage({ params }: Props) {
-  const job = jobs.find((j) => j.id === params.id);
+export default async function JobDetailPage({ params }: Props) {
+  const job = await getJobById(params.id);
   if (!job) {
     notFound();
   }

@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
-
-const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT ?? 'https://formspree.io/f/YOUR_ID';
+import { submitContactAction } from '@/app/actions/contact';
 
 const initialForm = {
   name: '',
@@ -54,21 +53,16 @@ export function ContactForm() {
     setSubmitError('');
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      });
+      const result = await submitContactAction(values);
 
-      if (!response.ok) throw new Error('Form submission failed');
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       setSubmitted(true);
       setValues(initialForm);
-    } catch {
-      setSubmitError('Something went wrong. Please try again or email us directly.');
+    } catch (err) {
+      setSubmitError((err as Error).message || 'Something went wrong. Please try again or email us directly.');
     } finally {
       setIsSubmitting(false);
     }
