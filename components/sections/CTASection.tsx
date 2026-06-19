@@ -1,7 +1,15 @@
+"use client";
+
 import { RevealSection } from '@/components/animations/RevealSection';
 import { Button } from '@/components/ui/Button';
 
 export function CTASection() {
+  const handleVacancyClick = (event: any) => {
+    const button = event.currentTarget;
+    button.classList.add('btn-clicked');
+    setTimeout(() => button.classList.remove('btn-clicked'), 400);
+  };
+
   return (
     <RevealSection className="border-y border-border bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.13),transparent_36%)]">
       <div className="mx-auto max-w-7xl px-6 py-24 text-center md:px-8 md:py-32">
@@ -13,7 +21,9 @@ export function CTASection() {
           Tell us where your team has a gap. We will match you with verified candidates and have a shortlist ready within 18 hours.
         </p>
         <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button href="/contact">Post a Vacancy</Button>
+          <Button href="/contact" className="vacancy-button" onClick={handleVacancyClick}>
+            Post a Vacancy
+          </Button>
           <Button href="/register" variant="outline">Register as a Candidate</Button>
         </div>
       </div>
