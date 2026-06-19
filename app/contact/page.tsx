@@ -5,23 +5,23 @@ import { PageHero } from '@/components/sections/PageHero';
 
 export const metadata: Metadata = {
   title: 'Contact | HNVNS',
-  description: 'Contact HNVNS to review imaging, AI diagnostics, and radiology reporting workflows.'
+  description: 'Contact HNVNS to discuss staffing, talent matching, and credential verification for imaging and diagnostic teams.'
 };
 
 const contactCards = [
   {
     title: 'Partnerships',
-    description: 'Explore imaging, AI, and reporting partnerships for hospitals, clinics, and research teams.',
+    description: 'Explore staffing partnerships, hospital collaborations, and talent pipeline support for healthcare teams.',
     value: 'partnerships@hnvns.example'
   },
   {
     title: 'Clinical operations',
-    description: 'Discuss workflow integration, reporting turnaround, and quality assurance requirements.',
+    description: 'Discuss staffing coordination, coverage planning, and onboarding requirements.',
     value: 'operations@hnvns.example'
   },
   {
-    title: 'Security review',
-    description: 'Request workflow, privacy, and integration documentation for your technical and compliance teams.',
+    title: 'Credential review',
+    description: 'Request compliance documentation and candidate verification details for your credentialing team.',
     value: 'security@hnvns.example'
   }
 ];
@@ -31,8 +31,8 @@ export default function ContactPage() {
     <div className="animate-page-fade">
       <PageHero
         eyebrow="Contact"
-        title="Tell us where your imaging workflow needs clarity."
-        description="Share a few details about your imaging volume, reporting challenges, and AI goals. Our team will respond with a focused workflow review."
+        title="Tell us where your staffing needs are most urgent."
+        description="Share a few details about your hiring volume, role gaps, and compliance priorities. Our team will respond with a focused staffing review."
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-5 px-6 pb-24 md:grid-cols-[0.9fr_1.1fr] md:px-8">
         <div className="rounded-[2rem] border border-border bg-surface p-8">
@@ -65,17 +65,17 @@ export default function ContactPage() {
               <input className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Hospital, clinic, or research group" />
             </label>
             <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm text-muted">Workflow focus</span>
+              <span className="text-sm text-muted">Staffing focus</span>
               <select className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/60">
-                <option>Imaging operations</option>
-                <option>AI diagnostics</option>
-                <option>Reporting</option>
-                <option>Research imaging</option>
+                <option>Staffing operations</option>
+                <option>Credential verification</option>
+                <option>Candidate sourcing</option>
+                <option>Clinical coverage</option>
               </select>
             </label>
             <label className="grid gap-2 md:col-span-2">
               <span className="text-sm text-muted">Message</span>
-              <textarea className="min-h-40 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Tell us about your imaging volume, current bottlenecks, and goals." />
+              <textarea className="min-h-40 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Tell us about your hiring volume, role gaps, and timeline." />
             </label>
           </div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">

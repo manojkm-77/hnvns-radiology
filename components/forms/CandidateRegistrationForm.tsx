@@ -27,8 +27,8 @@ const specializationOptions = [
   'Sonography',
   'PACS Administration',
   'Nuclear Medicine',
-  'Radiology Nursing',
-  'Imaging Management'
+  'Clinical Nursing',
+  'Imaging Operations'
 ];
 
 const experienceOptions = ['0–1 years', '1–3 years', '3–5 years', '5–8 years', '8+ years'];

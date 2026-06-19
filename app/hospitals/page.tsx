@@ -5,19 +5,19 @@ import { VacancyForm } from '@/components/forms/VacancyForm';
 
 export const metadata: Metadata = {
   title: 'Hospitals | HNVNS',
-  description: 'Request radiology staff, submit vacancies, or speak with the HNVNS hospital partnerships team.'
+  description: 'Request staffing support, submit vacancies, or speak with the HNVNS hospital partnerships team for clinical coverage and talent pipeline delivery.'
 };
 
 const actionCards = [
   {
     title: 'Request Staff',
-    description: 'Tell us the modality, volume, and coverage gaps your imaging team needs filled.',
+    description: 'Tell us the role type, shift requirements, and coverage gaps your clinical team needs filled.',
     href: '#vacancy-form',
     label: 'Request Staff →'
   },
   {
     title: 'Submit Vacancy',
-    description: 'Share an open role and we will match it with qualified imaging and radiology talent.',
+    description: 'Share an open role and we will match it with qualified talent across imaging, diagnostics, and clinical operations.',
     href: '#vacancy-form',
     label: 'Submit Vacancy →'
   },
@@ -35,10 +35,10 @@ export default function HospitalsPage() {
       <FadeUp as="section" className="mx-auto max-w-7xl px-6 pt-32 pb-16 md:px-8 md:pt-40 md:pb-24">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Hospitals</p>
         <h1 className="mt-5 max-w-4xl text-4xl font-light tracking-[-0.06em] text-text md:text-6xl">
-          Build a reliable radiology staffing pipeline.
+          Build a reliable staffing pipeline.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-8 text-muted md:text-lg">
-          Request staff, submit vacancies, or speak with our team to align imaging coverage with patient demand.
+          Request staff, submit vacancies, or speak with our team to align clinical coverage with patient demand.
         </p>
       </FadeUp>
 

@@ -4,9 +4,8 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
 const lines = [
-  'Radiology intelligence',
-  'for faster, clearer',
-  'clinical decisions'
+  'Where imaging departments',
+  'find verified clinical talent.'
 ];
 
 export function HeroHeadline() {
@@ -32,7 +31,7 @@ export function HeroHeadline() {
   }, []);
 
   return (
-    <div ref={ref} className="space-y-2" aria-label="Radiology intelligence for faster, clearer clinical decisions">
+    <div ref={ref} className="space-y-2" aria-label="Healthcare staffing intelligence for faster, smarter placements">
       {lines.map((line, lineIndex) => (
         <span key={line} className="block">
           {line.split(' ').map((word, wordIndex) => (

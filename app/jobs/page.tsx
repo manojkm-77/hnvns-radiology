@@ -3,7 +3,7 @@ import { JobsPageClient } from './JobsPageClient';
 
 export const metadata: Metadata = {
   title: 'Jobs | HNVNS',
-  description: 'Browse HNVNS radiology, imaging, AI diagnostics, and reporting career opportunities.'
+  description: 'Browse HNVNS healthcare staffing opportunities for imaging, diagnostics, and clinical operations teams.'
 };
 
 export default function JobsPage() {

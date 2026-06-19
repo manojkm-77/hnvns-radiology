@@ -13,20 +13,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'HNVNS | Full-stack Radiology, AI Diagnostics, and Reporting',
-  description: 'HNVNS combines advanced imaging, AI-assisted diagnostics, and precision reporting for hospitals, clinics, and research teams.',
+  title: 'HNVNS | Healthcare Staffing Marketplace for Imaging',
+  description: 'HNVNS connects hospitals and diagnostic teams with verified imaging and clinical talent through AI-powered staffing.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   openGraph: {
-    title: 'HNVNS | Full-stack Radiology, AI Diagnostics, and Reporting',
-    description: 'Advanced imaging, AI diagnostics, and precision reporting for modern radiology teams.',
+    title: 'HNVNS | Healthcare Staffing Marketplace',
+    description: 'AI-assisted staffing for imaging departments, candidate matching, and credential-verified hires.',
     type: 'website',
     locale: 'en_US',
     siteName: 'HNVNS'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'HNVNS | Full-stack Radiology',
-    description: 'Advanced imaging, AI diagnostics, and precision reporting for modern radiology teams.'
+    title: 'HNVNS | Healthcare Staffing Marketplace',
+    description: 'AI-assisted staffing for imaging departments, candidate matching, and credential-verified hires.'
   }
 };
 

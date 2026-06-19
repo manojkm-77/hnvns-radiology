@@ -1,6 +1,6 @@
-# HNVNS Radiology Website
+# HNVNS Healthcare Staffing Marketplace
 
-Production-ready dark minimal website for HNVNS, a full-stack radiology company focused on imaging, AI diagnostics, and reporting.
+Production-ready dark minimal website for HNVNS, a healthcare staffing marketplace focused on imaging, diagnostics, and verified candidate matching.
 
 ## Tech stack
 

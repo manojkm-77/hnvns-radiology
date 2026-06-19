@@ -17,7 +17,7 @@ export function Footer() {
               <span className="text-sm font-medium tracking-[0.28em] text-text">HNVNS</span>
             </Link>
             <p className="mt-6 max-w-sm text-sm leading-7 text-muted">
-              Full-stack radiology company delivering advanced imaging, AI diagnostics, and precision reporting for modern healthcare teams.
+              A premium healthcare staffing marketplace connecting hospitals with verified imaging and diagnostic technology professionals through smart, AI-driven recruitment.
             </p>
           </div>
 
@@ -68,7 +68,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col justify-between gap-4 border-t border-border pt-6 text-xs text-muted md:flex-row">
           <p>© {new Date().getFullYear()} HNVNS. All rights reserved.</p>
-          <p>Imaging · AI diagnostics · Reporting</p>
+          <p>Staffing · AI matching · Imaging · Diagnostics</p>
         </div>
       </div>
     </footer>

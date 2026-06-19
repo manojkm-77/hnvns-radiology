@@ -21,10 +21,10 @@ const initialForm = {
 const specializationOptions = [
   'Neuro Imaging',
   'Chest Imaging',
-  'MSK Radiology',
+  'MSK Imaging',
   'Body Imaging',
-  'Emergency Radiology',
-  "Women's Imaging",
+  'Emergency Coverage',
+  "Women's Health Imaging",
   'Pediatric Imaging',
   'AI Validation'
 ];

@@ -12,8 +12,8 @@ import { TrustBadgesSection } from '@/components/sections/TrustBadgesSection';
 import { ValuePropSection } from '@/components/sections/ValuePropSection';
 
 export const metadata: Metadata = {
-  title: 'HNVNS | Advanced Imaging, AI Diagnostics, and Reporting',
-  description: 'Explore HNVNS full-stack radiology services across imaging operations, AI diagnostics, and precision reporting.'
+  title: 'HNVNS | Healthcare Staffing Marketplace for Imaging',
+  description: 'Explore HNVNS healthcare staffing solutions for imaging departments, candidate matching, and AI-assisted recruitment.'
 };
 
 export default function HomePage() {

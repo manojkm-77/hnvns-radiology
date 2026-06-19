@@ -10,7 +10,7 @@ interface DotLottieCTAProps {
   size?: number
 }
 
-export default function DotLottieCTA({ src, href = "/contact", label = "Schedule a workflow review", size = 40, iconOnly = false }: DotLottieCTAProps & { iconOnly?: boolean }) {
+export default function DotLottieCTA({ src, href = "/contact", label = "Schedule a staffing review", size = 40, iconOnly = false }: DotLottieCTAProps & { iconOnly?: boolean }) {
   const mounted = useRef(false)
 
   useEffect(() => {

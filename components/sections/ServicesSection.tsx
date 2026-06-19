@@ -8,8 +8,8 @@ export function ServicesSection({ compact = false }: { compact?: boolean }) {
     <RevealSection id="services" className="mx-auto max-w-7xl px-6 py-24 md:px-8 md:py-32">
       <SectionHeader
         eyebrow="Services"
-        title="Imaging, AI diagnostics, and reporting in one operating layer."
-        description="Built for radiology teams that need speed without sacrificing rigor, and AI without sacrificing accountability."
+        title="Healthcare staffing services for imaging and diagnostic teams."
+        description="Built for hiring managers who need fast, verifiable talent and transparent candidate operations."
       />
 
       <div className="mt-14 grid gap-5 md:grid-cols-3">
@@ -40,7 +40,7 @@ export function ServicesSection({ compact = false }: { compact?: boolean }) {
 
       {!compact && (
         <div className="mt-10 text-center">
-          <Button href="/contact" variant="outline">Design your radiology workflow</Button>
+          <Button href="/contact" variant="outline">Explore staffing services</Button>
         </div>
       )}
     </RevealSection>

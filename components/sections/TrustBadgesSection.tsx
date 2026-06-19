@@ -10,7 +10,7 @@ export function TrustBadgesSection() {
           <div className="max-w-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Trust badges</p>
             <h2 className="mt-4 text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-              Accountability built into every handoff.
+              Accountability built into every placement.
             </h2>
           </div>
 

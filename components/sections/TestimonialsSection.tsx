@@ -8,7 +8,7 @@ export function TestimonialsSection() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Testimonials</p>
           <h2 className="mt-4 text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-            Trusted by teams moving imaging faster.
+            Trusted by teams moving staffing faster.
           </h2>
         </div>
 

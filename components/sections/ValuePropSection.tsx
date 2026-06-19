@@ -10,10 +10,10 @@ export function ValuePropSection() {
         <div className="max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Value proposition</p>
           <h2 className="mt-4 text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-            Built for hospitals that need throughput and candidates who need clarity.
+            Built for hospitals that need throughput and candidates who need the right fit.
           </h2>
           <p className="mt-6 text-base leading-8 text-muted md:text-lg">
-            HNVNS connects imaging operations, AI support, and radiologist expertise so every stakeholder knows what happens next.
+            HNVNS connects hospitals, clinics, and diagnostic centres with verified clinical professionals through one accountable marketplace.
           </p>
         </div>
 

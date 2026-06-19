@@ -4,7 +4,7 @@ import { CandidateRegistrationForm } from '@/components/forms/CandidateRegistrat
 
 export const metadata: Metadata = {
   title: 'Candidates | HNVNS',
-  description: 'Register your radiology, imaging, PACS, or clinical operations profile with HNVNS.'
+  description: 'Register your imaging, diagnostics, PACS, or clinical operations profile with HNVNS.',
 };
 
 export default function CandidatesPage() {
@@ -16,7 +16,7 @@ export default function CandidatesPage() {
           Join the HNVNS talent network.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-8 text-muted md:text-lg">
-          Submit your profile for radiology, imaging, PACS, nursing, and clinical operations opportunities.
+          Submit your profile for imaging, diagnostics, PACS, nursing, and clinical operations opportunities.
         </p>
       </FadeUp>
 

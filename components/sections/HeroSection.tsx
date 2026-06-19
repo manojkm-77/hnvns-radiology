@@ -23,18 +23,18 @@ export function HeroSection() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
-            Full-stack radiology for imaging, AI, and reporting
+            Healthcare staffing for imaging, AI, and verified hiring
           </motion.div>
 
           <HeroHeadline />
 
           <p className="mt-8 max-w-2xl text-lg leading-8 text-muted md:text-xl">
-            HNVNS combines advanced imaging operations, AI-assisted diagnostics, and radiologist-authored reporting into one precise clinical workflow.
+            HNVNS connects hospitals and healthcare teams with credentialed clinical talent through AI-powered matching — faster, smarter, with zero placement noise.
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button href="/contact">Schedule a workflow review</Button>
-            <Button href="/services" variant="outline">Explore services</Button>
+            <Button href="/contact">Request Staff Now</Button>
+            <Button href="/jobs" variant="outline">Browse Open Roles</Button>
           </div>
         </div>
 
@@ -44,17 +44,17 @@ export function HeroSection() {
             <div className="rounded-[1.5rem] border border-border bg-bg p-5 md:p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted">Live read queue</p>
-                  <p className="mt-1 text-sm font-medium text-text">Neuro · Chest · MSK</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted">Live vacancy feed</p>
+                  <p className="mt-1 text-sm font-medium text-text">Hospital staffing · AI match · Verified</p>
                 </div>
                 <span className="rounded-full border border-accent/30 px-3 py-1 text-xs text-accent">AI assisted</span>
               </div>
 
               <div className="space-y-3">
                 {[
-                  ['Urgent CTA head', 'Critical finding flag', '98.7%'],
-                  ['MRI lumbar spine', 'Protocol matched', '12 min'],
-                  ['Chest CT nodule', 'AI measurement', '0.8 cm']
+                  ['Senior MRI Technologist · Apollo Hospitals, Bengaluru', 'Urgent', 'AI match 94%'],
+                  ['CT Radiographer · Manipal Hospital, Mangaluru', 'New', 'AI match 89%'],
+                  ['Reporting Specialist · Narayana Health, Hyderabad', 'Open', 'AI match 87%']
                 ].map((item, index) => (
                   <div key={item[0]} className="rounded-2xl border border-border bg-surface p-4">
                     <div className="flex items-center justify-between gap-4">
@@ -77,7 +77,7 @@ export function HeroSection() {
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3">
-                {['Triage', 'Measure', 'Report'].map((label, index) => (
+                {['Match', 'Verify', 'Place'].map((label, index) => (
                   <div key={label} className="rounded-2xl border border-border bg-surface p-3 text-center">
                     <p className="text-xs text-muted">{label}</p>
                     <p className="mt-2 text-sm font-medium text-text">0{index + 1}</p>

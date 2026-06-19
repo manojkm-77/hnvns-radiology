@@ -7,7 +7,7 @@ import { insights } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: 'Insights | HNVNS',
-  description: 'Read HNVNS insights on imaging operations, AI diagnostics, structured reporting, and radiology workflow optimization.'
+  description: 'Read HNVNS insights on healthcare staffing, imaging recruitment, and workforce optimization for medical teams.'
 };
 
 export default function InsightsPage() {
@@ -15,8 +15,8 @@ export default function InsightsPage() {
     <div className="animate-page-fade">
       <PageHero
         eyebrow="Insights"
-        title="Radiology thinking for imaging, AI, and reporting teams."
-        description="Practical articles on workflow design, AI-assisted diagnostics, reporting quality, and the operational details that make clinical imaging faster."
+        title="Staffing thinking for imaging, diagnostics, and clinical operations."
+        description="Practical articles on candidate matching, credential compliance, and hiring operations for diagnostic teams."
       />
       <RevealSection className="mx-auto max-w-7xl px-6 pb-24 md:px-8">
         <div className="grid gap-5 md:grid-cols-3">
@@ -38,12 +38,12 @@ export default function InsightsPage() {
         <div className="mt-12 rounded-[2rem] border border-border bg-surface p-8 md:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Workflow notes</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Staffing notes</p>
               <h2 className="mt-4 max-w-2xl text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-                Want deeper workflow guidance?
+                Want deeper hiring guidance?
               </h2>
               <p className="mt-5 max-w-2xl text-sm leading-7 text-muted md:text-base">
-                Get practical checklists for imaging operations, AI validation, and reporting quality across distributed clinical teams.
+                Get practical checklists for credential verification, candidate matching, and staffing operations across healthcare teams.
               </p>
             </div>
             <Button href="/contact">Request the guide</Button>

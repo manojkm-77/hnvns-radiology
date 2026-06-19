@@ -59,7 +59,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-3">
           <Button href="/contact" className="hidden md:inline-flex">
-            Book a consult
+            Post a Vacancy
           </Button>
           <button
             type="button"

@@ -2,127 +2,88 @@ export const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },
-  { label: 'Insights', href: '/insights' },
+  { label: 'Blog', href: '/insights' },
+  { label: 'For Hospitals', href: '/hospitals' },
+  { label: 'For Candidates', href: '/candidates' },
   { label: 'Contact', href: '/contact' }
 ];
 
 export const tickerItems = [
-  'AI Diagnostics',
-  'Advanced Imaging',
-  'Precision Reporting',
-  'Workflow Optimization'
+  'MRI Technologist · Bengaluru',
+  'CT Radiographer · Mumbai',
+  'Clinical Operations Lead · Delhi',
+  "Women's Health Specialist · Chennai",
+  'PACS Administrator · Pune',
+  'Pediatric Care Coordinator · Hyderabad',
+  'AI Validation Lead · Bengaluru',
+  'MSK Specialist · Kolkata'
 ];
 
 export const stats = [
-  { label: 'Scans analyzed', value: 10000, suffix: '+', decimals: 0 },
-  { label: 'Diagnostic accuracy', value: 98.7, suffix: '%', decimals: 1 },
-  { label: 'Turnaround time', value: 24, prefix: '<', suffix: 'hr', decimals: 0 },
-  { label: 'Partner sites', value: 50, suffix: '+', decimals: 0 }
+  { label: 'Candidates placed', value: 1400, suffix: '+', decimals: 0 },
+  { label: 'Credential verification rate', value: 98.2, suffix: '%', decimals: 1 },
+  { label: 'Avg. shortlist delivery', value: 18, prefix: '<', suffix: 'hrs', decimals: 0 },
+  { label: 'Partner hospitals', value: 200, suffix: '+', decimals: 0 }
 ];
 
 export const jobs = [
   {
-    id: 'senior-radiographer-apollo-hospitals-mumbai',
-    title: 'Senior Radiographer',
+    id: 'senior-mri-technologist-apollo-hospitals-bengaluru',
+    title: 'Senior MRI Technologist',
     hospital: 'Apollo Hospitals',
-    location: 'Mumbai',
-    type: 'Full-Time',
-    salary: '₹6–9 LPA',
-    postedAt: 'Posted 2 days ago',
-    specialization: 'Radiography',
+    location: 'Bengaluru',
+    type: 'Urgent',
+    salary: 'AI match 94%',
+    postedAt: 'Urgent',
+    specialization: 'MRI',
     status: 'featured'
   },
   {
-    id: 'ct-scan-technologist-fortis-healthcare-delhi',
-    title: 'CT Scan Technologist',
-    hospital: 'Fortis Healthcare',
-    location: 'Delhi',
-    type: 'Contract',
-    salary: '₹5–7 LPA',
-    postedAt: 'Posted 1 day ago',
-    specialization: 'CT Scan',
-    status: 'urgent'
-  },
-  {
-    id: 'mri-technologist-manipal-hospitals-bangalore',
-    title: 'MRI Technologist',
-    hospital: 'Manipal Hospitals',
-    location: 'Bangalore',
-    type: 'Full-Time',
-    salary: '₹5.5–8 LPA',
-    postedAt: 'Posted 4 days ago',
-    specialization: 'MRI',
+    id: 'ct-radiographer-manipal-hospital-mangaluru',
+    title: 'CT Radiographer',
+    hospital: 'Manipal Hospital',
+    location: 'Mangaluru',
+    type: 'New',
+    salary: 'AI match 89%',
+    postedAt: 'New',
+    specialization: 'CT',
     status: 'new'
   },
   {
-    id: 'sonographer-aster-cmi-bangalore',
-    title: 'Sonographer',
-    hospital: 'Aster CMI',
-    location: 'Bangalore',
-    type: 'Full-Time',
-    salary: '₹4–6 LPA',
-    postedAt: 'Posted 5 days ago',
-    specialization: 'Sonography',
-    status: 'open'
-  },
-  {
-    id: 'pacs-administrator-max-healthcare-delhi',
-    title: 'PACS Administrator',
-    hospital: 'Max Healthcare',
-    location: 'Delhi',
-    type: 'Full-Time',
-    salary: '₹7–10 LPA',
-    postedAt: 'Posted 3 days ago',
-    specialization: 'PACS',
-    status: 'featured'
-  },
-  {
-    id: 'nuclear-medicine-tech-tata-memorial-mumbai',
-    title: 'Nuclear Medicine Tech',
-    hospital: 'Tata Memorial',
-    location: 'Mumbai',
-    type: 'Full-Time',
-    salary: '₹8–12 LPA',
-    postedAt: 'Posted 6 days ago',
-    specialization: 'Nuclear Medicine',
-    status: 'open'
-  },
-  {
-    id: 'radiology-nurse-narayana-health-hyderabad',
-    title: 'Radiology Nurse',
+    id: 'reporting-specialist-narayana-health-hyderabad',
+    title: 'Reporting Specialist',
     hospital: 'Narayana Health',
     location: 'Hyderabad',
-    type: 'Full-Time',
-    salary: '₹3.5–5 LPA',
-    postedAt: 'Posted today',
-    specialization: 'Radiology Nursing',
+    type: 'Open',
+    salary: 'AI match 87%',
+    postedAt: 'Open',
+    specialization: 'Reporting',
     status: 'urgent'
-  },
-  {
-    id: 'imaging-manager-columbia-asia-pune',
-    title: 'Imaging Manager',
-    hospital: 'Columbia Asia',
-    location: 'Pune',
-    type: 'Full-Time',
-    salary: '₹12–18 LPA',
-    postedAt: 'Posted 7 days ago',
-    specialization: 'Imaging Management',
-    status: 'new'
   }
 ];
 
 export const valueProps = [
   {
     audience: 'For Hospitals',
-    title: 'Scale imaging operations without losing clinical control.',
-    description: 'Keep studies moving from acquisition to final report with routing, AI triage, and quality workflows built for multi-site care.',
-    points: ['24/7 reporting coverage', 'PACS, RIS, and EHR routing', 'Audit-ready quality loops']
+    title: 'Scale your staffing pipeline without the recruitment noise.',
+    description: 'Post vacancies, filter by specialty and urgency, and let our AI surface the top three candidates within hours — not weeks.',
+    points: [
+      'Verified credentials and license checks on every candidate',
+      'AI-ranked shortlists delivered to your HR inbox',
+      '24-hour urgent placement track for critical gaps',
+      'Audit-ready onboarding documentation'
+    ]
   },
   {
     audience: 'For Candidates',
-    title: 'Work where reads are prioritized, contextual, and measurable.',
-    description: 'Join a platform that gives radiologists cleaner worklists, stronger case context, and transparent feedback on impact.',
-    points: ['Focused urgent and routine queues', 'AI-assisted case context', 'Clear quality and throughput signals']
+    title: 'Work where your specialty is genuinely valued.',
+    description: 'Register once, get matched to roles that fit your modality strengths, shift preferences, and career goals.',
+    points: [
+      'Specialty-matched alerts for MRI, CT, ultrasound, neuro, and MSK',
+      'Transparent salary bands on every posting',
+      'Direct communication with hospital HR',
+      'Profile stays private until you apply'
+    ]
   }
 ];
 
@@ -133,18 +94,18 @@ export const howItWorks = {
     steps: [
       {
         number: '01',
-        title: 'Connect your imaging network',
-        description: 'Normalize studies from PACS, RIS, EHR, and research sources into one secure workflow.'
+        title: 'Submit your vacancy',
+        description: 'Describe the role, modality, urgency tier, and shift needs.'
       },
       {
         number: '02',
-        title: 'Prioritize with AI and rules',
-        description: 'Route urgent studies, match protocols, and flag findings before they sit idle.'
+        title: 'AI matches and ranks candidates',
+        description: 'Our engine scores candidates and surfaces a shortlist with verification badges.'
       },
       {
         number: '03',
-        title: 'Report back into operations',
-        description: 'Return structured reports, critical findings, dashboards, and QA signals to the right teams.'
+        title: 'Hire and onboard',
+        description: 'Connect with candidates, confirm the hire, and receive ready-to-sign onboarding documents.'
       }
     ]
   },
@@ -154,18 +115,18 @@ export const howItWorks = {
     steps: [
       {
         number: '01',
-        title: 'Share your specialty fit',
-        description: 'Tell us your modality strengths, availability, and reporting preferences.'
+        title: 'Register your specialty profile',
+        description: 'Share your modality strengths, licenses, location, and availability.'
       },
       {
         number: '02',
-        title: 'Match to the right queue',
-        description: 'Get paired with studies that fit your expertise and urgency profile.'
+        title: 'Get matched to the right roles',
+        description: 'AI surfaces roles that genuinely fit, with transparent pay details.'
       },
       {
         number: '03',
-        title: 'Read with confidence',
-        description: 'Use AI context, peer review, and quality feedback to deliver clearer reports faster.'
+        title: 'Apply, interview, place',
+        description: 'Apply in one click and get placed with full documentation support.'
       }
     ]
   }
@@ -175,107 +136,107 @@ export const specializations = [
   {
     tag: 'Priority',
     title: 'Neuro Imaging',
-    description: 'Urgent head, spine, and neurovascular reads with structured critical finding workflows.'
+    description: 'Neuroimaging specialists and clinicians for head, spine, and neurovascular roles. 38 open roles.'
   },
   {
     tag: 'Featured',
     title: 'Chest Imaging',
-    description: 'Thoracic CT, X-ray, and nodule workflows with AI-assisted measurement support.'
+    description: 'Thoracic CT and X-ray roles across clinical teams and hospital networks. 52 open roles.'
   },
   {
     tag: 'New',
-    title: 'MSK Radiology',
-    description: 'Musculoskeletal injury, degeneration, and sports medicine reporting pathways.'
+    title: 'MSK Imaging',
+    description: 'Musculoskeletal specialists for sports medicine, injury, and movement disorder roles. 24 open roles.'
   },
   {
     tag: 'Teal',
     title: 'Body Imaging',
-    description: 'Abdominal and pelvic imaging workflows for complex multi-organ review.'
+    description: 'Abdominal and pelvic imaging roles for multi-organ diagnostic pathways. 19 open roles.'
   },
   {
     tag: 'Urgent',
-    title: 'Emergency Radiology',
-    description: 'Rapid triage for time-sensitive findings, critical results, and on-call coverage.'
+    title: 'Emergency Coverage',
+    description: 'On-call and urgent-triage specialists for emergency and trauma department coverage. 31 open roles.'
   },
   {
     tag: 'Featured',
-    title: "Women's Imaging",
-    description: 'Breast, pelvic, and OB-related imaging workflows with careful reporting standards.'
+    title: "Women's Health Imaging",
+    description: 'Breast, pelvic, and obstetric specialists with carefully vetted credentials. 27 open roles.'
   },
   {
     tag: 'New',
     title: 'Pediatric Imaging',
-    description: 'Age-aware protocols and reporting for pediatric diagnostic studies.'
+    description: 'Age-aware clinical imaging professionals for pediatric care and trauma support. 14 open roles.'
   },
   {
     tag: 'Teal',
     title: 'AI Validation',
-    description: 'Model evaluation, annotation review, and performance monitoring for clinical AI programs.'
+    description: 'Clinical reviewers and technologists for model evaluation, annotation review, and AI QA programs. 17 open roles.'
   }
 ];
 
 export const trustBadges = [
   {
-    title: 'Radiologist-led review',
-    description: 'Final interpretations stay under expert clinical oversight.'
+    title: 'Credential-verified candidates',
+    description: 'License and certification checks completed before any candidate appears in a shortlist.'
   },
   {
-    title: 'AI-assisted, not AI-replaced',
-    description: 'Decision support augments radiologist judgment and accountability.'
+    title: 'AI-matched, human-confirmed',
+    description: 'AI ranks candidates on specialty fit and availability; every hire is confirmed by your HR team.'
   },
   {
-    title: 'Workflow integrations',
-    description: 'Designed around PACS, RIS, EHR, and reporting handoffs.'
+    title: 'Privacy-first profiles',
+    description: 'Candidates control visibility; hospitals only see full details after the candidate applies.'
   },
   {
-    title: 'Quality loops',
-    description: 'Audit trails, feedback, and structured reporting support continuous improvement.'
+    title: 'Transparent pay on every role',
+    description: 'Every vacancy shows a clear salary band upfront, reducing negotiation friction on both sides.'
   },
   {
-    title: 'Secure handoffs',
-    description: 'Clear routing and communication patterns for sensitive clinical data.'
+    title: 'Onboarding documentation',
+    description: 'Confirmed hires trigger automatic generation of offer letters, credential summaries, and onboarding packets.'
   },
   {
-    title: 'Measurable throughput',
-    description: 'Dashboards and metrics help teams track turnaround and capacity.'
+    title: 'Real-time HR analytics',
+    description: 'Track time-to-fill, pipeline status, and department staffing levels from your admin dashboard.'
   }
 ];
 
 export const services = [
   {
     number: '01',
-    title: 'Imaging',
-    description: 'High-fidelity diagnostic imaging workflows across modalities, optimized for speed, consistency, and clinical confidence.',
-    capabilities: ['CT and MRI acquisition support', 'Cloud-native study routing', 'Protocol standardization']
+    title: 'Candidate matching',
+    description: 'Specialty-first matching for imaging and diagnostic roles, surfacing only credential-verified candidates who meet your shift and coverage needs.',
+    capabilities: ['AI-driven specialty scoring', 'Availability-first shortlists', 'Verified candidate profiles']
   },
   {
     number: '02',
-    title: 'AI Diagnostics',
-    description: 'AI-assisted detection, prioritization, and decision support designed to augment radiologist judgment without slowing the worklist.',
-    capabilities: ['Triage and flagging', 'Lesion and anomaly detection', 'Model performance monitoring']
+    title: 'Vacancy management',
+    description: 'A structured vacancy workflow that captures role details, urgency, and coverage gaps so hiring moves faster with less back-and-forth.',
+    capabilities: ['Standardized role briefs', 'Urgency-based routing', 'Shortlist tracking']
   },
   {
     number: '03',
-    title: 'Reporting',
-    description: 'Structured, clear, and actionable reporting services that reduce ambiguity and help care teams act faster.',
-    capabilities: ['Radiologist-authored reports', 'Critical result workflows', 'Quality assurance reviews']
+    title: 'Credential verification',
+    description: 'Automated license and certification checks for every candidate, so your team can trust every shortlist with compliance-ready talent.',
+    capabilities: ['License checks', 'Credential document audit', 'Background status tracking']
   }
 ];
 
 export const audiences = [
   {
     title: 'Hospitals',
-    description: 'Enterprise imaging operations that need scalable reporting, reliable turnaround, and measurable quality control.',
+    description: 'Enterprise hospital systems that need reliable imaging coverage, streamlined hiring, and credential compliance.',
     tag: 'Enterprise'
   },
   {
     title: 'Clinics',
-    description: 'Ambulatory and specialty clinics looking for accurate reads, streamlined workflows, and partner-grade communication.',
+    description: 'Ambulatory and specialty clinics looking for timely staffing, clearer candidate visibility, and faster fill rates.',
     tag: 'Ambulatory'
   },
   {
     title: 'Research',
-    description: 'Clinical research teams that require annotated imaging data, model evaluation, and reproducible imaging pipelines.',
+    description: 'Clinical research teams that require qualified imaging specialists, verified credentials, and flexible staffing support.',
     tag: 'Clinical AI'
   }
 ];
@@ -284,12 +245,12 @@ export const steps = [
   {
     number: '01',
     title: 'Ingest and normalize',
-    description: 'Securely connect PACS, RIS, EHR, or research data sources and normalize studies into a clean operational layer.'
+    description: 'Securely connect hiring data sources and normalize candidate profiles into a clean operational layer.'
   },
   {
     number: '02',
     title: 'Analyze with AI',
-    description: 'Run validated imaging models and radiologist review workflows to prioritize findings and support faster decisions.'
+    description: 'Run validated staffing models and review workflows to prioritize candidates and support faster decisions.'
   },
   {
     number: '03',
@@ -300,40 +261,40 @@ export const steps = [
 
 export const testimonials = [
   {
-    quote: 'HNVNS gave our imaging team the clarity, speed, and AI support we needed without adding complexity to daily operations.',
+    quote: 'HNVNS filled our MRI team gap in under 36 hours. The candidates were pre-verified and the platform made the entire HR process completely painless.',
     name: 'Dr. Meera Raman',
-    role: 'Chief Radiologist, Metro Imaging Network'
+    role: 'Chief Staffing Officer, Metro Imaging Network'
   },
   {
-    quote: 'The reporting quality is exceptional. Their workflow reduced our turnaround bottlenecks and improved referring physician trust.',
+    quote: 'Staffing gaps in imaging used to cost us days of back-and-forth. HNVNS cut that to hours with AI shortlisting that was genuinely accurate.',
     name: 'Arun Patel',
     role: 'Operations Director, Northstar Hospitals'
   },
   {
-    quote: 'Their AI diagnostics platform helped us prioritize urgent studies while keeping radiologists firmly in control of the final read.',
+    quote: 'I registered on Monday, had three relevant interview requests by Wednesday, and accepted an offer by Friday. The pay transparency made HNVNS worth it.',
     name: 'Dr. Lena Ortiz',
-    role: 'Research Lead, Aurora Clinical AI Lab'
+    role: 'Technologist, placed via HNVNS'
   }
 ];
 
 export const insights = [
   {
     date: 'Jun 12, 2026',
-    category: 'AI Diagnostics',
-    title: 'How AI triage improves urgent imaging workflows without replacing radiologists',
-    excerpt: 'A practical look at how AI flagging can reduce time-to-review while preserving clinical accountability.'
+    category: 'Staffing',
+    title: 'How AI matching reduces time-to-hire without losing clinical judgement',
+    excerpt: 'A practical look at how specialty-fit scoring can surface the right candidate in hours, not weeks.'
   },
   {
     date: 'May 28, 2026',
-    category: 'Reporting',
-    title: 'The anatomy of a high-value radiology report',
-    excerpt: 'Structured reporting principles that make findings easier to interpret, act on, and measure.'
+    category: 'Compliance',
+    title: 'What hospitals miss when they skip credential verification in healthcare hires',
+    excerpt: 'The credential gaps that cause the most costly mis-hires in clinical staffing programs.'
   },
   {
     date: 'May 09, 2026',
-    category: 'Imaging Operations',
-    title: 'Designing imaging pipelines for multi-site healthcare networks',
-    excerpt: 'Operational patterns for routing, normalization, and quality assurance across distributed imaging centers.'
+    category: 'Candidate Guide',
+    title: 'How to build a candidate profile that gets shortlisted',
+    excerpt: 'Practical steps for specialty professionals to improve their match scores on HNVNS.'
   }
 ];
 
@@ -345,14 +306,15 @@ export const footerLinks = {
     { label: 'Contact', href: '/contact' }
   ],
   services: [
-    { label: 'Imaging', href: '/services#imaging' },
-    { label: 'AI Diagnostics', href: '/services#ai-diagnostics' },
-    { label: 'Reporting', href: '/services#reporting' }
+    { label: 'Candidate Matching', href: '/services#candidate-matching' },
+    { label: 'Vacancy Management', href: '/services#vacancy-management' },
+    { label: 'HR Dashboard', href: '/services#hr-dashboard' },
+    { label: 'Credential Verification', href: '/services#credential-verification' }
   ],
   resources: [
-    { label: 'Workflow guide', href: '/insights' },
-    { label: 'AI safety', href: '/insights' },
-    { label: 'Quality reporting', href: '/insights' }
+    { label: 'Candidate guide', href: '/insights' },
+    { label: 'AI matching explained', href: '/insights' },
+    { label: 'Credential standards', href: '/insights' }
   ],
   legal: [
     { label: 'Privacy', href: '#' },

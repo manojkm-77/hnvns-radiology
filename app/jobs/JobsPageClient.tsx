@@ -93,10 +93,10 @@ export function JobsPageClient() {
       <FadeUp as="section" className="mx-auto max-w-7xl px-6 pt-32 pb-16 md:px-8 md:pt-40 md:pb-24">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Jobs</p>
         <h1 className="mt-5 max-w-4xl text-4xl font-light tracking-[-0.06em] text-text md:text-6xl">
-          Find your next radiology role.
+          Find your next imaging or diagnostics opportunity.
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-8 text-muted md:text-lg">
-          Explore imaging, reporting, PACS, and clinical operations roles across HNVNS partner hospitals.
+          Explore verified staffing roles across imaging, PACS, clinical operations, and hospital support functions.
         </p>
       </FadeUp>
 
