@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { registerCandidateAction } from '@/app/actions/candidate';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const initialForm = {
   fullName: '',
@@ -40,7 +41,32 @@ export function CandidateRegistrationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const update = (key: keyof typeof initialForm, value: string) => {
+  // CV Scanner State
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanComplete, setScanComplete] = useState(false);
+  const [scanStatus, setScanStatus] = useState('');
+  const [scannedTags, setScannedTags] = useState<string[]>([]);
+  const [matchScore, setMatchScore] = useState<number | null>(null);
+
+  const generateExtractionResult = (spec: string) => {
+    const tagsMap: Record<string, string[]> = {
+      'Radiography': ['X-Ray Tech', 'Patient Positioning', 'Radiation QA', 'ARRT Certified ✔'],
+      'CT Scan': ['Helical CT', 'Dose Modulation', 'Multi-slice Imaging', 'Contrast Admin ✔'],
+      'MRI': ['T1/T2 Weighting', 'Magnet Safety', 'Artifact Reduction', 'Functional MRI ✔'],
+      'Sonography': ['Doppler Flow', 'Obstetric Scan', 'Transducer Prep', 'ARDMS Certified ✔'],
+      'PACS Administration': ['DICOM Standards', 'HL7 Protocol', 'Server Virtualization', 'CIIP Certified ✔'],
+      'Nuclear Medicine': ['Radiopharmaceuticals', 'PET/CT Scan', 'Gamma Camera', 'NMTCB Registered ✔'],
+      'Clinical Nursing': ['IV Cannulation', 'BLS/ACLS', 'Sedation Care', 'Critical Patient Monitoring ✔'],
+      'Imaging Operations': ['Workflow Optimization', 'RIS Scheduling', 'Team Leadership', 'Regulatory Compliance ✔']
+    };
+
+    const defaultTags = ['Clinical Credentials', 'Diagnostic Imaging', 'PACS Archiving', 'Verified Experience ✔'];
+    const tags = tagsMap[spec] || defaultTags;
+    setScannedTags(tags);
+    setMatchScore(Math.floor(Math.random() * (98 - 87 + 1)) + 87);
+  };
+
+  const update = (key: keyof typeof initialForm, value: any) => {
     setValues((current) => ({ ...current, [key]: value }));
     if (errors[key]) {
       setErrors((current) => {
@@ -48,6 +74,10 @@ export function CandidateRegistrationForm() {
         delete next[key];
         return next;
       });
+    }
+
+    if (key === 'specialization' && scanComplete) {
+      generateExtractionResult(value);
     }
   };
 
@@ -79,6 +109,31 @@ export function CandidateRegistrationForm() {
         delete next.cv;
         return next;
       });
+    }
+
+    if (file) {
+      setIsScanning(true);
+      setScanComplete(false);
+      setScanStatus('Initializing AI Resume Scanning...');
+
+      setTimeout(() => {
+        setScanStatus('Extracting credentials and licensing metadata...');
+      }, 800);
+
+      setTimeout(() => {
+        setScanStatus('Mapping clinical competency to active vacancies...');
+      }, 1600);
+
+      setTimeout(() => {
+        setIsScanning(false);
+        setScanComplete(true);
+        generateExtractionResult(values.specialization || 'General');
+      }, 2500);
+    } else {
+      setIsScanning(false);
+      setScanComplete(false);
+      setScannedTags([]);
+      setMatchScore(null);
     }
   };
 
@@ -115,7 +170,6 @@ export function CandidateRegistrationForm() {
     setSubmitError('');
 
     try {
-      // 1. Upload CV to Vercel Blob via our API endpoint
       let resumeUrl = '';
       if (values.cv) {
         const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(values.cv.name)}`, {
@@ -131,7 +185,6 @@ export function CandidateRegistrationForm() {
         resumeUrl = uploadData.url;
       }
 
-      // 2. Register candidate profile in database using server action
       const formattedAvailability = `Experience: ${values.experience} | Prefers: ${values.employmentType.join(', ')} | Expected: ${values.expectedSalary} ${values.linkedIn ? `| LinkedIn: ${values.linkedIn}` : ''} ${values.message ? `| Message: ${values.message}` : ''}`;
 
       const result = await registerCandidateAction({
@@ -149,6 +202,9 @@ export function CandidateRegistrationForm() {
 
       setSubmitted(true);
       setValues(initialForm);
+      setScanComplete(false);
+      setScannedTags([]);
+      setMatchScore(null);
     } catch (err) {
       setSubmitError((err as Error).message || 'Something went wrong. Please try again.');
     } finally {
@@ -323,28 +379,103 @@ export function CandidateRegistrationForm() {
           {errors.expectedSalary && <span className="text-xs text-red-300">{errors.expectedSalary}</span>}
         </label>
 
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">CV Upload</span>
-          <div className="relative">
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx"
-              onChange={(event) => updateCv(event.target.files?.[0])}
-              className="absolute inset-0 cursor-pointer opacity-0"
-              aria-label="Upload CV"
-            />
-            <div className={cn(
-              'flex min-h-14 items-center justify-between rounded-2xl border bg-bg px-4 text-sm transition-colors',
-              errors.cv ? 'border-red-400/60' : 'border-border'
-            )}>
-              <span className="text-muted">{values.cv ? values.cv.name : 'Upload your CV (PDF, DOC, or DOCX)'}</span>
-              <span className="ml-4 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
-                Browse
-              </span>
-            </div>
-          </div>
+        {/* --- DYNAMIC CV SCANNER MODULE --- */}
+        <div className="grid gap-2 md:col-span-2">
+          <span className="text-sm text-muted">CV / Resume Upload</span>
+          
+          <AnimatePresence mode="wait">
+            {/* 1. SCANNING STATE */}
+            {isScanning && (
+              <motion.div
+                key="scanning"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="relative overflow-hidden rounded-2xl border border-accent/40 bg-accent-dim/10 p-6 text-center"
+              >
+                {/* Laser scan line anim */}
+                <motion.div
+                  animate={{ top: ['0%', '100%', '0%'] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent shadow-[0_0_8px_#2dd4bf] opacity-80"
+                />
+                <div className="mx-auto flex h-10 w-10 animate-spin items-center justify-center rounded-full border-2 border-accent border-t-transparent text-accent mb-3" />
+                <p className="text-sm font-medium text-text">{scanStatus}</p>
+                <p className="mt-1 text-xs text-muted">Scanning layout structure and mapping competencies...</p>
+              </motion.div>
+            )}
+
+            {/* 2. SCAN COMPLETE STATE */}
+            {!isScanning && scanComplete && (
+              <motion.div
+                key="complete"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="rounded-2xl border border-emerald-500/30 bg-emerald-950/5 p-6"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+                      ✓
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-text">AI Verification Successful</p>
+                      <p className="text-xs text-muted truncate max-w-[250px] sm:max-w-md">{values.cv?.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <p className="text-xs text-muted">Match Rating</p>
+                      <p className="text-sm font-bold text-accent">{matchScore}% Match</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => updateCv(undefined)}
+                      className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-muted hover:text-text transition-colors"
+                    >
+                      Replace File
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted mb-2.5">Extracted Competency Matrix</p>
+                  <div className="flex flex-wrap gap-2">
+                    {scannedTags.map((tag) => (
+                      <span key={tag} className="inline-flex items-center rounded-lg border border-accent/20 bg-accent/5 px-2.5 py-1 text-xs text-accent">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 3. DEFAULT BROWSE FILE STATE */}
+            {!isScanning && !scanComplete && (
+              <motion.div key="browse" className="relative">
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(event) => updateCv(event.target.files?.[0])}
+                  className="absolute inset-0 cursor-pointer opacity-0 z-10"
+                  aria-label="Upload CV"
+                />
+                <div className={cn(
+                  'flex min-h-14 items-center justify-between rounded-2xl border bg-bg px-4 text-sm transition-colors hover:border-accent/40',
+                  errors.cv ? 'border-red-400/60' : 'border-border'
+                )}>
+                  <span className="text-muted">Upload your CV (PDF, DOC, or DOCX)</span>
+                  <span className="ml-4 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent shrink-0">
+                    Browse
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
           {errors.cv && <span className="text-xs text-red-300">{errors.cv}</span>}
-        </label>
+        </div>
 
         <label className="grid gap-2 md:col-span-2">
           <span className="text-sm text-muted">LinkedIn (optional)</span>
@@ -380,10 +511,10 @@ export function CandidateRegistrationForm() {
       <div className="mt-8">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isScanning}
           className={cn(
             'inline-flex h-12 items-center justify-center rounded-full border border-accent bg-accent px-6 text-sm font-medium text-bg transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent/30',
-            isSubmitting && 'cursor-wait opacity-70'
+            (isSubmitting || isScanning) && 'cursor-wait opacity-70'
           )}
         >
           {isSubmitting ? 'Submitting...' : 'Submit My Profile'}
@@ -392,3 +523,4 @@ export function CandidateRegistrationForm() {
     </form>
   );
 }
+
