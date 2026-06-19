@@ -1,10 +1,10 @@
 import { RevealSection } from '@/components/animations/RevealSection';
 
 const bullets = [
-  'Radiologist-led AI validation and continuous quality review',
-  'HIPAA-ready workflows for imaging data, reporting, and integrations',
-  'Multi-site PACS, RIS, EHR, and research pipeline connectivity',
-  'Transparent reporting standards with measurable turnaround and accuracy'
+  'Verified credential checks for every candidate',
+  'AI-ranked shortlists that match specialty and availability',
+  'Transparent pay bands and direct HR communication',
+  'One-click onboarding documents and audit-ready summaries'
 ];
 
 export function AboutSplitSection() {
@@ -14,13 +14,13 @@ export function AboutSplitSection() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">About HNVNS</p>
           <h2 className="mt-4 text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-            Full-stack radiology built around precision, speed, and trust.
+            Full-stack healthcare staffing built around precision, speed, and trust.
           </h2>
           <p className="mt-6 text-base leading-8 text-muted md:text-lg">
-            HNVNS connects imaging operations, AI-assisted diagnostics, and structured reporting into a single platform for healthcare teams that cannot afford ambiguity.
+            HNVNS is a staffing marketplace that connects hospitals and diagnostic centres with verified imaging professionals — from technologists to reporting specialists.
           </p>
           <p className="mt-6 text-base leading-8 text-muted md:text-lg">
-            We help hospitals, clinics, and research teams standardize imaging workflows, prioritize urgent findings, and deliver clear reports that move care forward.
+            We reduce time-to-hire with AI-driven matching, transparent pay bands, and end-to-end onboarding documentation so clinical teams can focus on care.
           </p>
         </div>
 

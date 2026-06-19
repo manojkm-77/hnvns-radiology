@@ -14,10 +14,10 @@ export function HowItWorksSection() {
         <div className="max-w-xl">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">How it works</p>
           <h2 className="mt-4 text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-            Two parallel flows, one accountable imaging network.
+            Full-stack healthcare staffing for imaging departments.
           </h2>
           <p className="mt-6 text-base leading-8 text-muted md:text-lg">
-            Hospitals get a controlled path from intake to reporting. Candidates get a focused path from specialty fit to active reads.
+            Hospitals can post urgent vacancies and receive verified, specialty-matched shortlists; candidates receive transparent role matches and faster placements.
           </p>
         </div>
 

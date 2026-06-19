@@ -18,8 +18,8 @@ export function SpecializationsSection() {
     <RevealSection id="specializations" className="mx-auto max-w-7xl px-6 py-24 md:px-8 md:py-32">
       <SectionHeader
         eyebrow="Specializations"
-        title="Eight imaging lanes tuned for speed, context, and clinical confidence."
-        description="From urgent neuro reads to AI validation programs, every lane carries the same operating standard."
+        title="Eight imaging lanes tuned for speed, specialty fit, and verified hiring."
+        description="From urgent on-call radiographers to AI validation experts, each lane is designed to surface the right candidate quickly."
       />
 
       <StaggerChildren className="mt-14 grid gap-5 md:grid-cols-4" stagger={0.055}>
@@ -29,7 +29,7 @@ export function SpecializationsSection() {
             <h3 className="mt-8 text-xl font-light tracking-[-0.03em] text-text">{specialization.title}</h3>
             <p className="mt-4 text-sm leading-7 text-muted">{specialization.description}</p>
             <span className="mt-8 inline-flex text-xs font-medium uppercase tracking-[0.22em] text-accent">
-              View lane
+              View roles →
             </span>
           </article>
         ))}
