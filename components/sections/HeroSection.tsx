@@ -33,8 +33,19 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button href="/contact">Request Staff Now</Button>
-            <Button href="/jobs" variant="outline">Browse Open Roles</Button>
+            <Button
+              href="/contact"
+              className="bg-gradient-to-r from-[#5df3c3] to-[#15a684] text-black shadow-[0_20px_80px_-30px_rgba(45,212,191,0.85)] hover:scale-[1.02] hover:shadow-[0_24px_90px_-35px_rgba(45,212,191,0.95)] transition-all duration-300 animate-[pulse_2.8s_ease-in-out_infinite]"
+            >
+              Request Staff Now
+            </Button>
+            <Button
+              href="/jobs"
+              variant="outline"
+              className="border-white/20 text-white/90 hover:border-white hover:text-white hover:shadow-[0_0_30px_rgba(255,255,255,0.18)] transition-all duration-300"
+            >
+              Browse Open Roles
+            </Button>
           </div>
         </div>
 
