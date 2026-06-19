@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { JobsPageClient } from './JobsPageClient';
 import { prisma } from '@/lib/prisma';
 import { jobs as staticJobs } from '@/lib/data';
+import { hasRequiredEnv } from '@/lib/env';
 
 export const metadata: Metadata = {
   title: 'Jobs | HNVNS',
@@ -27,23 +28,23 @@ function formatRelativeTime(dateInput: Date): string {
 }
 
 export default async function JobsPage() {
-  let serializedJobs = [];
-  try {
-    const dbJobs = await prisma.job.findMany({
-      orderBy: { postedAt: 'desc' },
-    });
+  let serializedJobs = staticJobs;
 
-    if (dbJobs.length > 0) {
-      serializedJobs = dbJobs.map((job) => ({
-        ...job,
-        postedAt: formatRelativeTime(new Date(job.postedAt))
-      }));
-    } else {
-      serializedJobs = staticJobs;
+  if (hasRequiredEnv('DATABASE_URL')) {
+    try {
+      const dbJobs = await prisma.job.findMany({
+        orderBy: { postedAt: 'desc' },
+      });
+
+      if (dbJobs.length > 0) {
+        serializedJobs = dbJobs.map((job) => ({
+          ...job,
+          postedAt: formatRelativeTime(new Date(job.postedAt))
+        }));
+      }
+    } catch (error) {
+      console.warn('Database connection failed, falling back to static jobs:', error);
     }
-  } catch (error) {
-    console.warn('Database connection failed, falling back to static jobs:', error);
-    serializedJobs = staticJobs;
   }
 
   return <JobsPageClient initialJobs={serializedJobs as any} />;

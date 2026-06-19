@@ -6,6 +6,7 @@ import { jobs as staticJobs } from '@/lib/data';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { RevealSection } from '@/components/animations/RevealSection';
+import { hasRequiredEnv } from '@/lib/env';
 
 type Props = {
   params: {
@@ -30,6 +31,10 @@ function formatRelativeTime(dateInput: Date): string {
 }
 
 async function getJobById(id: string) {
+  if (!hasRequiredEnv('DATABASE_URL')) {
+    return staticJobs.find((j) => j.id === id) || null;
+  }
+
   try {
     const dbJob = await prisma.job.findUnique({
       where: { id },
@@ -47,6 +52,12 @@ async function getJobById(id: string) {
 }
 
 export async function generateStaticParams() {
+  if (!hasRequiredEnv('DATABASE_URL')) {
+    return staticJobs.map((job) => ({
+      id: job.id,
+    }));
+  }
+
   try {
     const dbJobs = await prisma.job.findMany({
       select: { id: true }

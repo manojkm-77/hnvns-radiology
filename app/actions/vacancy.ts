@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { hasRequiredEnv } from '@/lib/env';
 import { resend } from '@/lib/resend';
 
 type VacancyInput = {
@@ -16,6 +17,10 @@ type VacancyInput = {
 };
 
 export async function submitVacancyAction(values: VacancyInput) {
+  if (!hasRequiredEnv('DATABASE_URL')) {
+    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
+  }
+
   try {
     // 1. Save vacancy request to PostgreSQL database
     const request = await prisma.vacancyRequest.create({

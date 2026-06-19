@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { hasRequiredEnv } from '@/lib/env';
 import { resend } from '@/lib/resend';
 
 type CandidateInput = {
@@ -13,6 +14,10 @@ type CandidateInput = {
 };
 
 export async function registerCandidateAction(values: CandidateInput) {
+  if (!hasRequiredEnv('DATABASE_URL')) {
+    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
+  }
+
   try {
     // 1. Save candidate to PostgreSQL database
     const candidate = await prisma.candidate.create({
