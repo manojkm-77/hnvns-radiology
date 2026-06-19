@@ -9,7 +9,7 @@ export function BlogPreviewSection() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Insights</p>
           <h2 className="mt-4 max-w-3xl text-3xl font-light tracking-[-0.04em] text-text md:text-5xl">
-            Practical insights on staffing, credentialing, and AI matching for imaging teams.
+            Practical thinking for imaging, AI, and reporting teams.
           </h2>
         </div>
         <Link href="/insights" className="text-sm font-medium text-accent transition-colors hover:text-accent/80">

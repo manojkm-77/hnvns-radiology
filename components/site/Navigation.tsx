@@ -59,7 +59,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-3">
           <Button href="/contact" className="hidden md:inline-flex">
-            Post a Vacancy
+            Book a consult
           </Button>
           <button
             type="button"
@@ -98,7 +98,7 @@ export function Navigation() {
                 </Link>
               ))}
               <Button href="/contact" className="mt-2">
-                Post a Vacancy
+                Book a consult
               </Button>
             </div>
           </motion.div>
