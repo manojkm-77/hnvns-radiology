@@ -4,19 +4,24 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const variants = {
-  primary: "bg-teal border-teal text-black hover:bg-teal/90",
-  outline: "border-border-dark text-muted hover:border-white/40 hover:text-white",
+  primary: "bg-accent border-accent text-black hover:bg-accent/90",
+  outline: "border-border text-muted hover:border-white/40 hover:text-white",
   ghost: "border-transparent text-muted hover:text-white",
 }
 
 type Variant = keyof typeof variants
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type BaseButtonProps = {
   variant?: Variant
   className?: string
   href?: string
   children: React.ReactNode
 }
+
+type ButtonProps = BaseButtonProps & (
+  | React.ButtonHTMLAttributes<HTMLButtonElement>
+  | React.AnchorHTMLAttributes<HTMLAnchorElement>
+)
 
 export function Button({
   className,
@@ -40,7 +45,7 @@ export function Button({
   }
 
   return (
-    <button className={classes} {...props}>
+    <button className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
       {children}
     </button>
   )

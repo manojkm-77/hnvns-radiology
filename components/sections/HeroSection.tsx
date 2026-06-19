@@ -68,12 +68,12 @@ export function HeroSection() {
                   ['Reporting Specialist · Narayana Health, Hyderabad', 'Open', 'AI match 87%']
                 ].map((item, index) => (
                   <div key={item[0]} className="rounded-2xl border border-border bg-surface p-4">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between sm:gap-4">
                       <div>
                         <p className="text-sm font-medium text-text">{item[0]}</p>
                         <p className="mt-1 text-sm text-muted">{item[1]}</p>
                       </div>
-                      <span className="text-sm text-accent">{item[2]}</span>
+                      <span className="text-sm text-accent shrink-0">{item[2]}</span>
                     </div>
                     <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-border">
                       <motion.div

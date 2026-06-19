@@ -18,7 +18,7 @@ export function CTASection() {
   return (
     <RevealSection className="border-y border-border bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.13),transparent_36%)]">
       <div className="mx-auto max-w-7xl px-6 py-24 text-center md:px-8 md:py-32">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Bring staffing, AI matching, and verified hiring into one precise system.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Get Started</p>
         <h2 className="mx-auto mt-5 max-w-4xl text-4xl font-light tracking-[-0.06em] text-text md:text-6xl">
           Bring staffing, AI matching, and verified hiring into one precise system.
         </h2>
@@ -29,7 +29,7 @@ export function CTASection() {
           <Button href="/contact" className="vacancy-button hero-cta-button" onClick={handleVacancyClick}>
             Post a Vacancy
           </Button>
-          <Button href="/register" variant="outline">Register as a Candidate</Button>
+          <Button href="/candidates" variant="outline">Register as a Candidate</Button>
         </div>
       </div>
     </RevealSection>

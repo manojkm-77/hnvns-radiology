@@ -32,9 +32,9 @@ export const jobs = [
     title: 'Senior MRI Technologist',
     hospital: 'Apollo Hospitals',
     location: 'Bengaluru',
-    type: 'Urgent',
-    salary: 'AI match 94%',
-    postedAt: 'Urgent',
+    type: 'Full-Time',
+    salary: '₹12,00,000 - ₹16,00,000 / year',
+    postedAt: '2 hours ago',
     specialization: 'MRI',
     status: 'featured'
   },
@@ -43,9 +43,9 @@ export const jobs = [
     title: 'CT Radiographer',
     hospital: 'Manipal Hospital',
     location: 'Mangaluru',
-    type: 'New',
-    salary: 'AI match 89%',
-    postedAt: 'New',
+    type: 'Contract',
+    salary: '₹8,00,000 - ₹11,00,000 / year',
+    postedAt: '1 day ago',
     specialization: 'CT',
     status: 'new'
   },
@@ -54,9 +54,9 @@ export const jobs = [
     title: 'Reporting Specialist',
     hospital: 'Narayana Health',
     location: 'Hyderabad',
-    type: 'Open',
-    salary: 'AI match 87%',
-    postedAt: 'Open',
+    type: 'Locum',
+    salary: '₹4,000 / hour',
+    postedAt: '3 days ago',
     specialization: 'Reporting',
     status: 'urgent'
   }

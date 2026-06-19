@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { RevealSection } from '@/components/animations/RevealSection';
-import { Button } from '@/components/ui/Button';
 import { PageHero } from '@/components/sections/PageHero';
+import { ContactForm } from '@/components/forms/ContactForm';
 
 export const metadata: Metadata = {
   title: 'Contact | HNVNS',
@@ -50,39 +50,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <form className="rounded-[2rem] border border-border bg-surface p-8">
-          <div className="grid gap-5 md:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm text-muted">Name</span>
-              <input className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Dr. A. Sharma" />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm text-muted">Email</span>
-              <input className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="name@hospital.org" type="email" />
-            </label>
-            <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm text-muted">Organization</span>
-              <input className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Hospital, clinic, or research group" />
-            </label>
-            <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm text-muted">Staffing focus</span>
-              <select className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/60">
-                <option>Staffing operations</option>
-                <option>Credential verification</option>
-                <option>Candidate sourcing</option>
-                <option>Clinical coverage</option>
-              </select>
-            </label>
-            <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm text-muted">Message</span>
-              <textarea className="min-h-40 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/60" placeholder="Tell us about your hiring volume, role gaps, and timeline." />
-            </label>
-          </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button href="mailto:partnerships@hnvns.example">Send inquiry</Button>
-            <Button href="/services" variant="outline">Review services</Button>
-          </div>
-        </form>
+        <ContactForm />
       </RevealSection>
     </div>
   );

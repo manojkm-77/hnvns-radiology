@@ -28,9 +28,6 @@ export default function InsightsPage() {
               </div>
               <h2 className="mt-8 text-2xl font-light tracking-[-0.04em] text-text group-hover:text-accent">{post.title}</h2>
               <p className="mt-4 text-sm leading-7 text-muted">{post.excerpt}</p>
-              <Link href="/insights" className="mt-8 inline-flex text-sm font-medium text-accent transition-transform duration-300 group-hover:translate-x-1">
-                Read article →
-              </Link>
             </article>
           ))}
         </div>

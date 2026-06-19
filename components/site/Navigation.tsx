@@ -101,7 +101,7 @@ export function Navigation() {
                 </Link>
               ))}
               <Button href="/contact" className="mt-2">
-                Book a consult
+                Post a Vacancy
               </Button>
             </div>
           </motion.div>

@@ -86,7 +86,12 @@ export function JobsPageClient() {
     setFilterToken((current) => current + 1);
   };
 
-  const activeFilterCount = Object.values(appliedFilters).filter(Boolean).length;
+  const activeFilterCount = [
+    appliedFilters.keyword.trim() !== '',
+    appliedFilters.specialization !== 'All Specializations',
+    appliedFilters.location !== 'All Locations',
+    appliedFilters.type !== 'All Types'
+  ].filter(Boolean).length;
 
   return (
     <div className="animate-page-fade">
@@ -100,7 +105,7 @@ export function JobsPageClient() {
         </p>
       </FadeUp>
 
-      <div className="sticky top-0 z-40 border-y border-border bg-bg/90 backdrop-blur-xl">
+      <div className="md:sticky md:top-0 z-40 border-y border-border bg-bg/90 backdrop-blur-xl">
         <div className="mx-auto grid max-w-7xl gap-3 px-6 py-5 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:px-8">
           <input
             value={filters.keyword}
