@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { Footer } from '@/components/site/Footer';
 import { Navigation } from '@/components/site/Navigation';
 import { PageTransition } from '@/components/animations/PageTransition';
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <PageTransition>{children}</PageTransition>
           <Footer />
         </LenisProvider>
+        <Analytics />
       </body>
     </html>
   );
