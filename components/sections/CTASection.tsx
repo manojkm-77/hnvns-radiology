@@ -1,13 +1,18 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { RevealSection } from '@/components/animations/RevealSection';
 import { Button } from '@/components/ui/Button';
 
 export function CTASection() {
-  const handleVacancyClick = (event: any) => {
+  const router = useRouter();
+
+  const handleVacancyClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
     const button = event.currentTarget;
     button.classList.add('btn-clicked');
     setTimeout(() => button.classList.remove('btn-clicked'), 400);
+    setTimeout(() => router.push('/contact'), 300);
   };
 
   return (
