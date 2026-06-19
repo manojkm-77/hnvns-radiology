@@ -35,7 +35,6 @@ export default function DotLottieCTA({ src, href = "/contact", label = "Schedule
   if (iconOnly) {
     return (
       <Button href={href} className="p-0 h-12 w-12 rounded-full flex items-center justify-center" aria-label={label}>
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore: dotlottie-player web component */}
         <dotlottie-player src={src} style={{ width: size, height: size }} loop autoplay aria-hidden />
       </Button>
@@ -45,7 +44,6 @@ export default function DotLottieCTA({ src, href = "/contact", label = "Schedule
   return (
     <Button href={href} className="inline-flex items-center gap-3">
       <span className="-ml-1 block h-10 w-10 flex-shrink-0">
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore: dotlottie-player web component */}
         <dotlottie-player
           src={src}
