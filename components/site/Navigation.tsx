@@ -58,7 +58,10 @@ export function Navigation() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button href="/contact" className="hidden md:inline-flex">
+          <Button
+            href="/contact"
+            className="hidden md:inline-flex hero-cta-button bg-gradient-to-r from-[#5df3c3] to-[#15a684] text-black shadow-[0_20px_80px_-30px_rgba(45,212,191,0.85)] hover:scale-[1.02] hover:shadow-[0_24px_90px_-35px_rgba(45,212,191,0.95)] transition-all duration-300"
+          >
             Post a Vacancy
           </Button>
           <button
