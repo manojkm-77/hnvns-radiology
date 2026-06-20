@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { FadeUp } from '@/components/animations/FadeUp';
 import { Button } from '@/components/ui/Button';
 import { VacancyForm } from '@/components/forms/VacancyForm';
+import { PricingSection } from '@/components/sections/PricingSection';
 
 export const metadata: Metadata = {
   title: 'Hospitals | HNVNS',
@@ -57,6 +58,8 @@ export default function HospitalsPage() {
       <FadeUp as="section" delay={0.2} className="mx-auto max-w-4xl px-6 pb-24 md:px-8 md:pb-32">
         <VacancyForm />
       </FadeUp>
+
+      <PricingSection />
     </div>
   );
 }

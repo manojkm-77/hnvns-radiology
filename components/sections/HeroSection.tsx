@@ -63,9 +63,10 @@ export function HeroSection() {
 
               <div className="space-y-3">
                 {[
-                  ['Senior MRI Technologist · Apollo Hospitals, Bengaluru', 'Urgent', 'AI match 94%'],
-                  ['CT Radiographer · Manipal Hospital, Mangaluru', 'New', 'AI match 89%'],
-                  ['Reporting Specialist · Narayana Health, Hyderabad', 'Open', 'AI match 87%']
+                  ['Senior MRI Technologist · Manipal Hospitals, Whitefield', 'Urgent', 'AI match 94%'],
+                  ['CT Radiographer · Aster CMI Hospital, Bengaluru', 'New', 'AI match 91%'],
+                  ['Reporting Specialist · Narayana Health City, Bengaluru', 'Open', 'AI match 88%'],
+                  ['Sonographer · Sakra Premium Referral Hospital', 'Open', 'AI match 86%']
                 ].map((item, index) => (
                   <div key={item[0]} className="rounded-2xl border border-border bg-surface p-4">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between sm:gap-4">

@@ -10,6 +10,8 @@ import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { TickerStrip } from '@/components/sections/TickerStrip';
 import { TrustBadgesSection } from '@/components/sections/TrustBadgesSection';
 import { ValuePropSection } from '@/components/sections/ValuePropSection';
+import { ZoneHeatmap } from '@/components/sections/ZoneHeatmap';
+import { HospitalTrustStrip } from '@/components/site/HospitalTrustStrip';
 
 export const metadata: Metadata = {
   title: 'HNVNS | Healthcare Staffing Marketplace for Imaging',
@@ -22,6 +24,8 @@ export default function HomePage() {
       <HeroSection />
       <TickerStrip />
       <ValuePropSection />
+      <ZoneHeatmap />
+      <HospitalTrustStrip />
       <StatsBar />
       <HowItWorksSection />
       <SpecializationsSection />
