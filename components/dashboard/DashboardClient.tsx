@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -31,11 +31,6 @@ type HospitalRow = {
   submittedAt: Date | string;
 };
 
-type Props = {
-  email: string;
-  firstName: string | null;
-};
-
 function formatDate(d: Date | string) {
   return new Date(d).toLocaleDateString(undefined, {
     month: 'short',
@@ -44,26 +39,41 @@ function formatDate(d: Date | string) {
   });
 }
 
-export function DashboardClient({ email, firstName }: Props) {
+export function DashboardClient({ email: initialEmail, firstName }: { email: string; firstName: string | null }) {
+  const [step, setStep] = useState<'email' | 'role' | 'data'>('email');
+  const [email, setEmail] = useState(initialEmail);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [role, setRole] = useState<Role | null>(null);
   const [candidateRows, setCandidateRows] = useState<CandidateRow[]>([]);
   const [hospitalRows, setHospitalRows] = useState<HospitalRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const loadData = async (selectedRole: Role) => {
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = emailInput.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      setEmailError('Enter a valid email address.');
+      return;
+    }
+    setEmail(val);
+    setStep('role');
+  };
+
+  const loadData = async (selectedRole: Role, resolvedEmail: string) => {
     setLoading(true);
     setError('');
 
     if (selectedRole === 'candidate') {
-      const res = await getCandidateApplicationsAction(email);
+      const res = await getCandidateApplicationsAction(resolvedEmail);
       if (res.success) {
         setCandidateRows(res.data as CandidateRow[]);
       } else {
         setError(res.error ?? 'Failed to load data.');
       }
     } else {
-      const res = await getHospitalVacanciesAction(email);
+      const res = await getHospitalVacanciesAction(resolvedEmail);
       if (res.success) {
         setHospitalRows(res.data as HospitalRow[]);
       } else {
@@ -72,22 +82,60 @@ export function DashboardClient({ email, firstName }: Props) {
     }
 
     setLoading(false);
+    setStep('data');
   };
 
   const selectRole = (r: Role) => {
     setRole(r);
-    loadData(r);
+    loadData(r, email);
   };
 
-  // Role selection screen
-  if (!role) {
+  // Step 1: collect email
+  if (step === 'email') {
+    return (
+      <div className="mx-auto max-w-md pt-16">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Dashboard</p>
+        <h1 className="mt-3 text-3xl font-light tracking-[-0.04em] text-text md:text-4xl">
+          View your activity.
+        </h1>
+        <p className="mt-2 text-sm text-muted">
+          Enter the email address you used when submitting your application or vacancy request.
+        </p>
+
+        <form onSubmit={handleEmailSubmit} className="mt-8 space-y-4">
+          <div className="grid gap-2">
+            <label htmlFor="dash-email" className="text-sm text-muted">Email address</label>
+            <input
+              id="dash-email"
+              type="email"
+              value={emailInput}
+              onChange={(e) => { setEmailInput(e.target.value); setEmailError(''); }}
+              className="h-12 rounded-2xl border border-border bg-surface px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
+              placeholder="name@example.com"
+              autoFocus
+            />
+            {emailError && <span className="text-xs text-red-300">{emailError}</span>}
+          </div>
+          <button
+            type="submit"
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-bg hover:bg-accent/90 transition-colors"
+          >
+            Look up my activity →
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Step 2: pick role
+  if (step === 'role') {
     return (
       <div className="mx-auto max-w-2xl pt-16">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Dashboard</p>
         <h1 className="mt-3 text-3xl font-light tracking-[-0.04em] text-text md:text-4xl">
-          Welcome back{firstName ? `, ${firstName}` : ''}.
+          Welcome back.
         </h1>
-        <p className="mt-2 text-sm text-muted">Select your account type to view your activity.</p>
+        <p className="mt-2 text-sm text-muted">Showing activity for <span className="text-text">{email}</span></p>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           <button
@@ -118,13 +166,20 @@ export function DashboardClient({ email, firstName }: Props) {
             <span className="mt-4 text-xs text-accent flex items-center gap-1 group-hover:translate-x-1 transition-transform">View vacancies →</span>
           </button>
         </div>
+
+        <button
+          onClick={() => { setStep('email'); setEmail(''); setEmailInput(''); }}
+          className="mt-8 text-xs text-muted hover:text-text transition-colors"
+        >
+          ← Use a different email
+        </button>
       </div>
     );
   }
 
+  // Step 3: show data
   return (
     <div className="animate-page-fade">
-      {/* Header */}
       <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-3">
@@ -140,7 +195,7 @@ export function DashboardClient({ email, firstName }: Props) {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => setRole(null)}
+            onClick={() => { setStep('role'); setRole(null); }}
             className="inline-flex h-10 items-center justify-center rounded-full border border-border bg-surface px-4 text-xs font-medium text-muted hover:text-text transition-colors"
           >
             ← Switch view
@@ -151,7 +206,6 @@ export function DashboardClient({ email, firstName }: Props) {
         </div>
       </div>
 
-      {/* Error */}
       {error && (
         <div className="mt-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-300">
           {error}
@@ -163,11 +217,9 @@ export function DashboardClient({ email, firstName }: Props) {
         <div className="mt-8">
           {candidateRows.length === 0 ? (
             <div className="rounded-3xl border border-border bg-surface p-10 text-center">
-              <p className="text-text text-lg font-light">No applications yet.</p>
+              <p className="text-text text-lg font-light">No applications found for {email}.</p>
               <p className="mt-2 text-sm text-muted">Browse open roles and apply via HNVNS to get started.</p>
-              <div className="mt-6">
-                <Button href="/jobs">Browse Jobs</Button>
-              </div>
+              <div className="mt-6"><Button href="/jobs">Browse Jobs</Button></div>
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
@@ -187,15 +239,10 @@ export function DashboardClient({ email, firstName }: Props) {
                       <td className="py-4 px-6">
                         {row.job ? (
                           <div>
-                            <Link
-                              href={`/jobs/${row.job.id}`}
-                              className="font-medium text-text hover:text-accent transition-colors"
-                            >
+                            <Link href={`/jobs/${row.job.id}`} className="font-medium text-text hover:text-accent transition-colors">
                               {row.job.title}
                             </Link>
-                            <p className="text-xs text-muted mt-0.5">
-                              {row.job.hospital} · {row.job.location}
-                            </p>
+                            <p className="text-xs text-muted mt-0.5">{row.job.hospital} · {row.job.location}</p>
                           </div>
                         ) : (
                           <span className="text-muted italic text-xs">General application</span>
@@ -203,17 +250,11 @@ export function DashboardClient({ email, firstName }: Props) {
                       </td>
                       <td className="py-4 px-6 text-accent">{row.specialization}</td>
                       <td className="py-4 px-6 text-muted">{formatDate(row.registeredAt)}</td>
-                      <td className="py-4 px-6">
-                        <Badge variant="teal">Under Review</Badge>
-                      </td>
+                      <td className="py-4 px-6"><Badge variant="teal">Under Review</Badge></td>
                       <td className="py-4 px-6 text-right">
                         {row.resumeUrl ? (
-                          <a
-                            href={row.resumeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex h-8 items-center justify-center rounded-lg bg-accent/10 border border-accent/20 px-3 text-xs text-accent hover:bg-accent/20 transition-colors"
-                          >
+                          <a href={row.resumeUrl} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex h-8 items-center justify-center rounded-lg bg-accent/10 border border-accent/20 px-3 text-xs text-accent hover:bg-accent/20 transition-colors">
                             View CV
                           </a>
                         ) : (
@@ -234,11 +275,9 @@ export function DashboardClient({ email, firstName }: Props) {
         <div className="mt-8">
           {hospitalRows.length === 0 ? (
             <div className="rounded-3xl border border-border bg-surface p-10 text-center">
-              <p className="text-text text-lg font-light">No vacancy requests yet.</p>
+              <p className="text-text text-lg font-light">No vacancy requests found for {email}.</p>
               <p className="mt-2 text-sm text-muted">Post a vacancy to start receiving matched candidate shortlists.</p>
-              <div className="mt-6">
-                <Button href="/hospitals">Post a Vacancy</Button>
-              </div>
+              <div className="mt-6"><Button href="/hospitals">Post a Vacancy</Button></div>
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
@@ -268,9 +307,7 @@ export function DashboardClient({ email, firstName }: Props) {
                       </td>
                       <td className="py-4 px-6 text-muted">{formatDate(row.startDate)}</td>
                       <td className="py-4 px-6 text-muted">{formatDate(row.submittedAt)}</td>
-                      <td className="py-4 px-6 text-right">
-                        <Badge variant="teal">In Review</Badge>
-                      </td>
+                      <td className="py-4 px-6 text-right"><Badge variant="teal">In Review</Badge></td>
                     </tr>
                   ))}
                 </tbody>
