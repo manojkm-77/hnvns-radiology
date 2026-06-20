@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^5.7.6",
     "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.0.0",
     "@types/nodemailer": "8.0.1",
