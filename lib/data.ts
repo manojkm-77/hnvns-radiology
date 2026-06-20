@@ -19,13 +19,6 @@ export const tickerItems = [
   'MSK Specialist · Kolkata'
 ];
 
-export const stats = [
-  { label: 'Candidates placed', value: 47, suffix: '', decimals: 0 },
-  { label: 'Credential verification rate', value: 100, suffix: '%', decimals: 0 },
-  { label: 'Avg. shortlist delivery', value: 18, prefix: '', suffix: 'hr', decimals: 0 },
-  { label: 'Partner hospitals', value: 12, suffix: '', decimals: 0 }
-];
-
 export const jobs = [
   {
     id: 'senior-mri-technologist-apollo-hospitals-bengaluru',

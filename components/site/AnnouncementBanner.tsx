@@ -31,10 +31,10 @@ export function AnnouncementBanner() {
         >
           <div className="mx-auto max-w-7xl px-6 py-2.5 pr-12 text-center text-xs sm:text-sm font-medium tracking-wide">
             <span>
-              🎉 Early access: Zero placement commission for our first 50 hospital partners in Bengaluru.{' '}
+              Launching in Bengaluru — first 10 hospital partners join with zero placement fee for 60 days.{' '}
             </span>
-            <Link href="/hospitals" className="underline font-bold hover:text-white/90 transition-colors inline-flex items-center">
-              Claim your spot →
+            <Link href="/contact" className="underline font-bold hover:text-white/90 transition-colors inline-flex items-center">
+              Talk to us →
             </Link>
           </div>
           <button

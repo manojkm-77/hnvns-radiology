@@ -68,7 +68,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col justify-between gap-4 border-t border-border pt-6 text-xs text-muted md:flex-row">
           <p>© {new Date().getFullYear()} HNVNS. All rights reserved.</p>
-          <p>Staffing · AI matching · Imaging · Diagnostics</p>
+          <p>{"Bengaluru's radiology staffing network — launching 2026"}</p>
         </div>
       </div>
     </footer>

@@ -5,7 +5,7 @@ import { CTASection } from '@/components/sections/CTASection';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { SpecializationsSection } from '@/components/sections/SpecializationsSection';
-import { StatsBar } from '@/components/sections/StatsBar';
+import { TrustStrip } from '@/components/sections/TrustStrip';
 import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
 import { TickerStrip } from '@/components/sections/TickerStrip';
 import { TrustBadgesSection } from '@/components/sections/TrustBadgesSection';
@@ -26,7 +26,7 @@ export default function HomePage() {
       <ValuePropSection />
       <ZoneHeatmap />
       <HospitalTrustStrip />
-      <StatsBar />
+      <TrustStrip />
       <HowItWorksSection />
       <SpecializationsSection />
       <TestimonialsSection />

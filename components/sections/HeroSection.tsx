@@ -29,7 +29,7 @@ export function HeroSection() {
           <HeroHeadline />
 
           <p className="mt-8 max-w-2xl text-lg leading-8 text-muted md:text-xl">
-            HNVNS connects hospitals and healthcare teams with credentialed clinical talent through AI-powered matching — faster, smarter, with zero placement noise.
+            {"HNVNS is building Bengaluru's first verified radiology staffing network — connecting imaging departments with credentialed technologists, faster than any recruiter."}
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -55,7 +55,7 @@ export function HeroSection() {
             <div className="rounded-[1.5rem] border border-border bg-bg p-5 md:p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted">Live vacancy feed</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted">Sample roles on HNVNS</p>
                   <p className="mt-1 text-sm font-medium text-text">Hospital staffing · AI match · Verified</p>
                 </div>
                 <span className="rounded-full border border-accent/30 px-3 py-1 text-xs text-accent">AI assisted</span>
@@ -87,6 +87,10 @@ export function HeroSection() {
                   </div>
                 ))}
               </div>
+
+              <p className="mt-4 text-xs text-muted text-center italic">
+                Representative roles. Active vacancies are shared directly with registered hospitals and candidates.
+              </p>
 
               <div className="mt-6 grid grid-cols-3 gap-3">
                 {['Match', 'Verify', 'Place'].map((label, index) => (

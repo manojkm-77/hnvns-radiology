@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { CTASection } from '@/components/sections/CTASection';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServicesSection } from '@/components/sections/ServicesSection';
-import { StatsBar } from '@/components/sections/StatsBar';
+import { TrustStrip } from '@/components/sections/TrustStrip';
 
 export const metadata: Metadata = {
   title: 'Services | HNVNS',
@@ -18,7 +18,7 @@ export default function ServicesPage() {
         description="From candidate matching to credential verification and vacancy management, HNVNS helps teams hire faster with lower risk."
       />
       <ServicesSection />
-      <StatsBar />
+      <TrustStrip />
       <CTASection />
     </div>
   );

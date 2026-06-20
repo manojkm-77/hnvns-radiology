@@ -3,7 +3,7 @@ import { RevealSection } from '@/components/animations/RevealSection';
 const bullets = [
   'Credential-verified candidates across 8 imaging specialties',
   'HIPAA-aligned data handling for all candidate profiles',
-  '200+ partner hospitals across India',
+  'A growing network of imaging departments across Bengaluru and Karnataka.',
   'AI matching trained specifically on imaging specialty data'
 ];
 

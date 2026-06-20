@@ -3,7 +3,6 @@ import { RevealSection } from '@/components/animations/RevealSection';
 import { AboutSplitSection } from '@/components/sections/AboutSplitSection';
 import { CTASection } from '@/components/sections/CTASection';
 import { PageHero } from '@/components/sections/PageHero';
-import { StatsBar } from '@/components/sections/StatsBar';
 
 export const metadata: Metadata = {
   title: 'About | HNVNS',
@@ -45,7 +44,6 @@ export default function AboutPage() {
           ))}
         </div>
       </RevealSection>
-      <StatsBar />
       <CTASection />
     </div>
   );

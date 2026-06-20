@@ -20,6 +20,15 @@ body {
   color: #f0f0f0;
 }
 
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .ticker-track {
   animation: ticker 34s linear infinite;
 }
