@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { navLinks } from '@/lib/data';
 import { cn } from '@/lib/utils';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -57,7 +58,31 @@ export function Navigation() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              className="text-sm font-medium text-muted hover:text-text transition-colors duration-300"
+            >
+              Sign In
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: 'h-9 w-9 rounded-full border border-accent/30',
+                },
+                variables: {
+                  colorPrimary: '#15a684',
+                  colorBackground: '#111111',
+                  colorText: '#ffffff',
+                }
+              }}
+            />
+          </SignedIn>
+
           <Button
             href="/contact"
             className="hidden md:inline-flex hero-cta-button bg-gradient-to-r from-[#5df3c3] to-[#15a684] text-black shadow-[0_20px_80px_-30px_rgba(45,212,191,0.85)] hover:scale-[1.02] hover:shadow-[0_24px_90px_-35px_rgba(45,212,191,0.95)] transition-all duration-300"
@@ -100,6 +125,32 @@ export function Navigation() {
                   {link.label}
                 </Link>
               ))}
+              <SignedOut>
+                <Link
+                  href="/sign-in"
+                  className="rounded-2xl border border-transparent px-4 py-3 text-sm text-muted transition-colors hover:border-border hover:text-text"
+                >
+                  Sign In
+                </Link>
+              </SignedOut>
+              <SignedIn>
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: 'h-9 w-9 rounded-full border border-accent/30',
+                      },
+                      variables: {
+                        colorPrimary: '#15a684',
+                        colorBackground: '#111111',
+                        colorText: '#ffffff',
+                      }
+                    }}
+                  />
+                  <span className="text-sm text-muted">Account Profile</span>
+                </div>
+              </SignedIn>
               <Button href="/contact" className="mt-2">
                 Post a Vacancy
               </Button>
