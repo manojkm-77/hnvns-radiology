@@ -4,6 +4,7 @@ import { Footer } from '@/components/site/Footer';
 import { Navigation } from '@/components/site/Navigation';
 import { PageTransition } from '@/components/animations/PageTransition';
 import { LenisProvider } from '@/providers/LenisProvider';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 const inter = Inter({
@@ -32,14 +33,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-bg font-sans text-text antialiased">
-        <LenisProvider>
-          <Navigation />
-          <PageTransition>{children}</PageTransition>
-          <Footer />
-        </LenisProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={inter.variable}>
+        <body className="min-h-screen bg-bg font-sans text-text antialiased">
+          <LenisProvider>
+            <Navigation />
+            <PageTransition>{children}</PageTransition>
+            <Footer />
+          </LenisProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
