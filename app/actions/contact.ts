@@ -1,5 +1,7 @@
 'use server';
 
+import { prisma } from '@/lib/prisma';
+import { hasRequiredEnv } from '@/lib/env';
 import { resend } from '@/lib/resend';
 
 type ContactInput = {
@@ -11,8 +13,26 @@ type ContactInput = {
 };
 
 export async function submitContactAction(values: ContactInput) {
+  // 1. Persist to DB if available
+  if (hasRequiredEnv('DATABASE_URL')) {
+    try {
+      await prisma.contactMessage.create({
+        data: {
+          name: values.name,
+          email: values.email,
+          organization: values.organization,
+          staffingFocus: values.staffingFocus,
+          message: values.message,
+        },
+      });
+    } catch (dbError) {
+      console.error('Failed to save contact message to DB:', dbError);
+      // Non-fatal — still attempt email send below
+    }
+  }
+
   try {
-    // Send email notification if Resend is configured
+    // 2. Send email notification if Resend is configured
     if (resend) {
       const adminEmail = process.env.ADMIN_EMAIL ?? 'partnerships@hnvns.example';
       

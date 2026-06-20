@@ -31,7 +31,29 @@ model Candidate {
   specialization String
   availability   String
   resumeUrl      String?
+  jobId          String?
   registeredAt   DateTime @default(now())
+}
+
+model ContactMessage {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  organization  String
+  staffingFocus String
+  message       String
+  submittedAt   DateTime @default(now())
+}
+
+model InsightPost {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  body        String
+  author      String
+  category    String
+  publishedAt DateTime @default(now())
 }
 
 model VacancyRequest {

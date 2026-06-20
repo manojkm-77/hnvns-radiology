@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { registerCandidateAction } from '@/app/actions/candidate';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +36,9 @@ const experienceOptions = ['0–1 years', '1–3 years', '3–5 years', '5–8 y
 const employmentOptions = ['Full-Time', 'Contract', 'Locum'];
 
 export function CandidateRegistrationForm() {
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get('jobId') ?? undefined;
+
   const [values, setValues] = useState(initialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -194,6 +198,7 @@ export function CandidateRegistrationForm() {
         specialization: values.specialization,
         availability: formattedAvailability,
         resumeUrl: resumeUrl,
+        jobId: jobId,
       });
 
       if (!result.success) {

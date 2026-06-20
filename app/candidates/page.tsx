@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { FadeUp } from '@/components/animations/FadeUp';
 import { CandidateRegistrationForm } from '@/components/forms/CandidateRegistrationForm';
 
@@ -21,7 +22,9 @@ export default function CandidatesPage() {
       </FadeUp>
 
       <FadeUp as="section" delay={0.1} className="mx-auto max-w-4xl px-6 pb-24 md:px-8 md:pb-32">
-        <CandidateRegistrationForm />
+        <Suspense fallback={<div className="rounded-[2rem] border border-border bg-surface p-8 animate-pulse h-64" />}>
+          <CandidateRegistrationForm />
+        </Suspense>
       </FadeUp>
     </div>
   );

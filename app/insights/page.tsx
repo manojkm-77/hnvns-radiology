@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description: 'Read HNVNS insights on healthcare staffing, imaging recruitment, and workforce optimization for medical teams.'
 };
 
+// Map insight titles to their slugs
+const slugMap: Record<string, string> = {
+  'How AI matching reduces time-to-hire without losing clinical judgement': 'ai-matching-reduces-time-to-hire',
+  'What hospitals miss when they skip credential verification in healthcare hires': 'hospitals-miss-credential-verification',
+  'How to build a candidate profile that gets shortlisted': 'build-candidate-profile-shortlisted',
+};
+
 export default function InsightsPage() {
   return (
     <div className="animate-page-fade">
@@ -20,16 +27,29 @@ export default function InsightsPage() {
       />
       <RevealSection className="mx-auto max-w-7xl px-6 pb-24 md:px-8">
         <div className="grid gap-5 md:grid-cols-3">
-          {insights.map((post) => (
-            <article key={post.title} className="group rounded-3xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-accent/40">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-xs uppercase tracking-[0.22em] text-accent">{post.category}</span>
-                <span className="text-xs text-muted">{post.date}</span>
-              </div>
-              <h2 className="mt-8 text-2xl font-light tracking-[-0.04em] text-text group-hover:text-accent">{post.title}</h2>
-              <p className="mt-4 text-sm leading-7 text-muted">{post.excerpt}</p>
-            </article>
-          ))}
+          {insights.map((post) => {
+            const slug = slugMap[post.title];
+            return (
+              <article key={post.title} className="group rounded-3xl border border-border bg-surface p-7 transition-colors duration-300 hover:border-accent/40">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-xs uppercase tracking-[0.22em] text-accent">{post.category}</span>
+                  <span className="text-xs text-muted">{post.date}</span>
+                </div>
+                <h2 className="mt-8 text-2xl font-light tracking-[-0.04em] text-text group-hover:text-accent">
+                  {post.title}
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-muted">{post.excerpt}</p>
+                {slug && (
+                  <Link
+                    href={`/insights/${slug}`}
+                    className="mt-6 inline-flex items-center gap-1 text-xs text-accent hover:underline"
+                  >
+                    Read article →
+                  </Link>
+                )}
+              </article>
+            );
+          })}
         </div>
 
         <div className="mt-12 rounded-[2rem] border border-border bg-surface p-8 md:p-10">

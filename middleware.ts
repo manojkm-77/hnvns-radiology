@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   '/about',
   '/contact',
   '/insights',
+  '/insights/(.*)',
   '/sign-in',
   '/sign-up',
   '/hospitals',
@@ -24,6 +25,8 @@ export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.[^?]*$).*)',
+    // Always run for Clerk's auto-proxy path
+    '/__clerk/:path*',
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],

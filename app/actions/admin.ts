@@ -3,10 +3,14 @@
 import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 
-const DEFAULT_PASSCODE = 'hnvns2026';
-
 function verifyPasscode(passcode: string): boolean {
-  const adminPasscode = process.env.ADMIN_PASSCODE || DEFAULT_PASSCODE;
+  const adminPasscode = process.env.ADMIN_PASSCODE;
+  if (!adminPasscode) {
+    throw new Error(
+      'ADMIN_PASSCODE environment variable is not set. ' +
+      'Please add it to your .env or Vercel project settings.'
+    );
+  }
   return passcode === adminPasscode;
 }
 
@@ -15,8 +19,12 @@ export async function getAdminDataAction(passcode: string) {
     return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
   }
 
-  if (!verifyPasscode(passcode)) {
-    return { success: false, error: 'Invalid passcode. Access denied.' };
+  try {
+    if (!verifyPasscode(passcode)) {
+      return { success: false, error: 'Invalid passcode. Access denied.' };
+    }
+  } catch (err) {
+    return { success: false, error: (err as Error).message };
   }
 
   try {
@@ -63,8 +71,12 @@ export async function createJobAction(passcode: string, jobData: {
     return { success: false, error: 'Database is not configured.' };
   }
 
-  if (!verifyPasscode(passcode)) {
-    return { success: false, error: 'Invalid passcode. Access denied.' };
+  try {
+    if (!verifyPasscode(passcode)) {
+      return { success: false, error: 'Invalid passcode. Access denied.' };
+    }
+  } catch (err) {
+    return { success: false, error: (err as Error).message };
   }
 
   try {
@@ -108,8 +120,12 @@ export async function updateJobAction(passcode: string, jobId: string, jobData: 
     return { success: false, error: 'Database is not configured.' };
   }
 
-  if (!verifyPasscode(passcode)) {
-    return { success: false, error: 'Invalid passcode. Access denied.' };
+  try {
+    if (!verifyPasscode(passcode)) {
+      return { success: false, error: 'Invalid passcode. Access denied.' };
+    }
+  } catch (err) {
+    return { success: false, error: (err as Error).message };
   }
 
   try {
@@ -142,8 +158,12 @@ export async function deleteJobAction(passcode: string, jobId: string) {
     return { success: false, error: 'Database is not configured.' };
   }
 
-  if (!verifyPasscode(passcode)) {
-    return { success: false, error: 'Invalid passcode. Access denied.' };
+  try {
+    if (!verifyPasscode(passcode)) {
+      return { success: false, error: 'Invalid passcode. Access denied.' };
+    }
+  } catch (err) {
+    return { success: false, error: (err as Error).message };
   }
 
   try {

@@ -11,6 +11,7 @@ type CandidateInput = {
   specialization: string;
   availability: string;
   resumeUrl?: string;
+  jobId?: string;
 };
 
 export async function registerCandidateAction(values: CandidateInput) {
@@ -28,6 +29,7 @@ export async function registerCandidateAction(values: CandidateInput) {
         specialization: values.specialization,
         availability: values.availability,
         resumeUrl: values.resumeUrl || null,
+        jobId: values.jobId || null,
       },
     });
 

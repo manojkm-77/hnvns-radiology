@@ -68,6 +68,15 @@ export function Navigation() {
             </Link>
           </SignedOut>
           <SignedIn>
+            <Link
+              href="/dashboard"
+              className={cn(
+                'rounded-full px-4 py-2 text-sm text-muted transition-colors duration-300 hover:text-text',
+                pathname === '/dashboard' && 'bg-accent/10 text-accent'
+              )}
+            >
+              Dashboard
+            </Link>
             <UserButton
               afterSignOutUrl="/"
               appearance={{
@@ -134,6 +143,15 @@ export function Navigation() {
                 </Link>
               </SignedOut>
               <SignedIn>
+                <Link
+                  href="/dashboard"
+                  className={cn(
+                    'rounded-2xl border border-transparent px-4 py-3 text-sm text-muted transition-colors hover:border-border hover:text-text',
+                    pathname === '/dashboard' && 'border-accent/20 bg-accent/10 text-accent'
+                  )}
+                >
+                  Dashboard
+                </Link>
                 <div className="flex items-center gap-3 px-4 py-3">
                   <UserButton
                     afterSignOutUrl="/"
