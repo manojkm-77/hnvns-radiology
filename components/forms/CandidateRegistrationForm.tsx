@@ -10,30 +10,26 @@ const initialForm = {
   fullName: '',
   email: '',
   phone: '',
+  location: '',
+  experienceYears: '',
   specialization: '',
-  experience: '',
-  currentLocation: '',
-  preferredLocation: '',
-  employmentType: [] as string[],
-  expectedSalary: '',
+  currentEmployer: '',
+  salaryRange: '',
+  availability: '',
   cv: null as File | null,
-  linkedIn: '',
-  message: ''
+  coverNote: '',
 };
 
 const specializationOptions = [
-  'Radiography',
-  'CT Scan',
-  'MRI',
+  'Radiology',
   'Sonography',
-  'PACS Administration',
+  'MRI',
+  'CT',
   'Nuclear Medicine',
-  'Clinical Nursing',
-  'Imaging Operations'
+  'Other',
 ];
 
-const experienceOptions = ['0–1 years', '1–3 years', '3–5 years', '5–8 years', '8+ years'];
-const employmentOptions = ['Full-Time', 'Contract', 'Locum'];
+const availabilityOptions = ['Immediate', '15 days', '30 days', '60 days'];
 
 export function CandidateRegistrationForm() {
   const searchParams = useSearchParams();
@@ -54,80 +50,43 @@ export function CandidateRegistrationForm() {
 
   const generateExtractionResult = (spec: string) => {
     const tagsMap: Record<string, string[]> = {
-      'Radiography': ['X-Ray Tech', 'Patient Positioning', 'Radiation QA', 'ARRT Certified ✔'],
-      'CT Scan': ['Helical CT', 'Dose Modulation', 'Multi-slice Imaging', 'Contrast Admin ✔'],
+      'Radiology': ['X-Ray Tech', 'Patient Positioning', 'Radiation QA', 'ARRT Certified ✔'],
+      'CT': ['Helical CT', 'Dose Modulation', 'Multi-slice Imaging', 'Contrast Admin ✔'],
       'MRI': ['T1/T2 Weighting', 'Magnet Safety', 'Artifact Reduction', 'Functional MRI ✔'],
       'Sonography': ['Doppler Flow', 'Obstetric Scan', 'Transducer Prep', 'ARDMS Certified ✔'],
-      'PACS Administration': ['DICOM Standards', 'HL7 Protocol', 'Server Virtualization', 'CIIP Certified ✔'],
       'Nuclear Medicine': ['Radiopharmaceuticals', 'PET/CT Scan', 'Gamma Camera', 'NMTCB Registered ✔'],
-      'Clinical Nursing': ['IV Cannulation', 'BLS/ACLS', 'Sedation Care', 'Critical Patient Monitoring ✔'],
-      'Imaging Operations': ['Workflow Optimization', 'RIS Scheduling', 'Team Leadership', 'Regulatory Compliance ✔']
     };
-
     const defaultTags = ['Clinical Credentials', 'Diagnostic Imaging', 'PACS Archiving', 'Verified Experience ✔'];
-    const tags = tagsMap[spec] || defaultTags;
-    setScannedTags(tags);
+    setScannedTags(tagsMap[spec] || defaultTags);
     setMatchScore(Math.floor(Math.random() * (98 - 87 + 1)) + 87);
   };
 
   const update = (key: keyof typeof initialForm, value: any) => {
-    setValues((current) => ({ ...current, [key]: value }));
-    if (errors[key]) {
-      setErrors((current) => {
-        const next = { ...current };
-        delete next[key];
-        return next;
-      });
-    }
-
-    if (key === 'specialization' && scanComplete) {
-      generateExtractionResult(value);
-    }
-  };
-
-  const updateEmploymentType = (type: string) => {
-    setValues((current) => {
-      const exists = current.employmentType.includes(type);
-      return {
-        ...current,
-        employmentType: exists
-          ? current.employmentType.filter((item) => item !== type)
-          : [...current.employmentType, type]
-      };
-    });
-
-    if (errors.employmentType) {
-      setErrors((current) => {
-        const next = { ...current };
-        delete next.employmentType;
-        return next;
-      });
-    }
+    setValues((c) => ({ ...c, [key]: value }));
+    if (errors[key]) setErrors((c) => { const n = { ...c }; delete n[key]; return n; });
+    if (key === 'specialization' && scanComplete) generateExtractionResult(value);
   };
 
   const updateCv = (file: File | undefined) => {
-    setValues((current) => ({ ...current, cv: file || null }));
-    if (errors.cv) {
-      setErrors((current) => {
-        const next = { ...current };
-        delete next.cv;
-        return next;
-      });
-    }
+    setValues((c) => ({ ...c, cv: file || null }));
+    if (errors.cv) setErrors((c) => { const n = { ...c }; delete n.cv; return n; });
 
     if (file) {
+      // PDF only, max 5MB
+      if (file.type !== 'application/pdf') {
+        setErrors((c) => ({ ...c, cv: 'Only PDF files are accepted.' }));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((c) => ({ ...c, cv: 'File must be under 5 MB.' }));
+        return;
+      }
+
       setIsScanning(true);
       setScanComplete(false);
       setScanStatus('Initializing AI Resume Scanning...');
-
-      setTimeout(() => {
-        setScanStatus('Extracting credentials and licensing metadata...');
-      }, 800);
-
-      setTimeout(() => {
-        setScanStatus('Mapping clinical competency to active vacancies...');
-      }, 1600);
-
+      setTimeout(() => setScanStatus('Extracting credentials and licensing metadata...'), 800);
+      setTimeout(() => setScanStatus('Mapping clinical competency to active vacancies...'), 1600);
       setTimeout(() => {
         setIsScanning(false);
         setScanComplete(true);
@@ -145,22 +104,19 @@ export function CandidateRegistrationForm() {
     const nextErrors: Record<string, string> = {};
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phonePattern = /^[0-9+\-\s()]{7,20}$/;
+    const exp = parseInt(values.experienceYears, 10);
 
     if (!values.fullName.trim()) nextErrors.fullName = 'Full name is required.';
     if (!values.email.trim()) nextErrors.email = 'Email is required.';
     else if (!emailPattern.test(values.email.trim())) nextErrors.email = 'Enter a valid email address.';
     if (!values.phone.trim()) nextErrors.phone = 'Phone number is required.';
     else if (!phonePattern.test(values.phone.trim())) nextErrors.phone = 'Enter a valid phone number.';
+    if (!values.location.trim()) nextErrors.location = 'Current location is required.';
+    if (!values.experienceYears || isNaN(exp) || exp < 0) nextErrors.experienceYears = 'Enter valid years of experience.';
     if (!values.specialization) nextErrors.specialization = 'Select a specialization.';
-    if (!values.experience) nextErrors.experience = 'Select years of experience.';
-    if (!values.currentLocation.trim()) nextErrors.currentLocation = 'Current location is required.';
-    if (!values.preferredLocation.trim()) nextErrors.preferredLocation = 'Preferred location is required.';
-    if (!values.employmentType.length) nextErrors.employmentType = 'Select at least one employment type.';
-    if (!values.expectedSalary.trim()) nextErrors.expectedSalary = 'Expected salary is required.';
+    if (!values.salaryRange.trim()) nextErrors.salaryRange = 'Expected salary range is required.';
+    if (!values.availability) nextErrors.availability = 'Select your availability.';
     if (!values.cv) nextErrors.cv = 'Upload your CV to continue.';
-    if (values.linkedIn.trim() && !/^https?:\/\/.+/i.test(values.linkedIn.trim())) {
-      nextErrors.linkedIn = 'Enter a valid LinkedIn URL.';
-    }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -180,30 +136,27 @@ export function CandidateRegistrationForm() {
           method: 'POST',
           body: values.cv,
         });
-
-        if (!uploadResponse.ok) {
-          throw new Error('CV upload failed. Please try again.');
-        }
-
+        if (!uploadResponse.ok) throw new Error('CV upload failed. Please try again.');
         const uploadData = await uploadResponse.json();
         resumeUrl = uploadData.url;
       }
 
-      const formattedAvailability = `Experience: ${values.experience} | Prefers: ${values.employmentType.join(', ')} | Expected: ${values.expectedSalary} ${values.linkedIn ? `| LinkedIn: ${values.linkedIn}` : ''} ${values.message ? `| Message: ${values.message}` : ''}`;
-
       const result = await registerCandidateAction({
-        name: values.fullName,
+        fullName: values.fullName,
         email: values.email,
         phone: values.phone,
+        location: values.location,
+        experienceYears: parseInt(values.experienceYears, 10),
         specialization: values.specialization,
-        availability: formattedAvailability,
-        resumeUrl: resumeUrl,
+        currentEmployer: values.currentEmployer || undefined,
+        salaryRange: values.salaryRange,
+        availability: values.availability,
+        resumeUrl: resumeUrl || undefined,
         jobId: jobId,
+        coverNote: values.coverNote || undefined,
       });
 
-      if (!result.success) {
-        throw new Error(result.error);
-      }
+      if (!result.success) throw new Error(result.error);
 
       setSubmitted(true);
       setValues(initialForm);
@@ -241,188 +194,112 @@ export function CandidateRegistrationForm() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
+        {/* Full Name */}
         <label className="grid gap-2">
           <span className="text-sm text-muted">Full Name</span>
-          <input
-            value={values.fullName}
-            onChange={(event) => update('fullName', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.fullName ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="Aarav Mehta"
-          />
+          <input value={values.fullName} onChange={(e) => update('fullName', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.fullName ? 'border-red-400/60' : 'border-border')}
+            placeholder="Aarav Mehta" />
           {errors.fullName && <span className="text-xs text-red-300">{errors.fullName}</span>}
         </label>
 
+        {/* Email */}
         <label className="grid gap-2">
           <span className="text-sm text-muted">Email</span>
-          <input
-            value={values.email}
-            onChange={(event) => update('email', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.email ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="name@example.com"
-            type="email"
-          />
+          <input type="email" value={values.email} onChange={(e) => update('email', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.email ? 'border-red-400/60' : 'border-border')}
+            placeholder="name@example.com" />
           {errors.email && <span className="text-xs text-red-300">{errors.email}</span>}
         </label>
 
+        {/* Phone */}
         <label className="grid gap-2">
           <span className="text-sm text-muted">Phone</span>
-          <input
-            value={values.phone}
-            onChange={(event) => update('phone', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.phone ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="+91 98765 43210"
-          />
+          <input value={values.phone} onChange={(e) => update('phone', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.phone ? 'border-red-400/60' : 'border-border')}
+            placeholder="+91 98765 43210" />
           {errors.phone && <span className="text-xs text-red-300">{errors.phone}</span>}
         </label>
 
+        {/* Current Location */}
+        <label className="grid gap-2">
+          <span className="text-sm text-muted">Current Location</span>
+          <input value={values.location} onChange={(e) => update('location', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.location ? 'border-red-400/60' : 'border-border')}
+            placeholder="Bangalore" />
+          {errors.location && <span className="text-xs text-red-300">{errors.location}</span>}
+        </label>
+
+        {/* Years of Experience */}
+        <label className="grid gap-2">
+          <span className="text-sm text-muted">Years of Experience</span>
+          <input type="number" min="0" value={values.experienceYears} onChange={(e) => update('experienceYears', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.experienceYears ? 'border-red-400/60' : 'border-border')}
+            placeholder="4" />
+          {errors.experienceYears && <span className="text-xs text-red-300">{errors.experienceYears}</span>}
+        </label>
+
+        {/* Specialization */}
         <label className="grid gap-2">
           <span className="text-sm text-muted">Specialization</span>
-          <select
-            value={values.specialization}
-            onChange={(event) => update('specialization', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.specialization ? 'border-red-400/60' : 'border-border'
-            )}
-          >
+          <select value={values.specialization} onChange={(e) => update('specialization', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.specialization ? 'border-red-400/60' : 'border-border')}>
             <option value="">Select specialization</option>
-            {specializationOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+            {specializationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
           {errors.specialization && <span className="text-xs text-red-300">{errors.specialization}</span>}
         </label>
 
+        {/* Current Employer (optional) */}
         <label className="grid gap-2">
-          <span className="text-sm text-muted">Years Experience</span>
-          <select
-            value={values.experience}
-            onChange={(event) => update('experience', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.experience ? 'border-red-400/60' : 'border-border'
-            )}
-          >
-            <option value="">Select experience</option>
-            {experienceOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+          <span className="text-sm text-muted">Current Employer <span className="text-muted/50">(optional)</span></span>
+          <input value={values.currentEmployer} onChange={(e) => update('currentEmployer', e.target.value)}
+            className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
+            placeholder="Apollo Hospitals" />
+        </label>
+
+        {/* Expected Salary Range */}
+        <label className="grid gap-2">
+          <span className="text-sm text-muted">Expected Salary Range</span>
+          <input value={values.salaryRange} onChange={(e) => update('salaryRange', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.salaryRange ? 'border-red-400/60' : 'border-border')}
+            placeholder="₹6–9 LPA" />
+          {errors.salaryRange && <span className="text-xs text-red-300">{errors.salaryRange}</span>}
+        </label>
+
+        {/* Availability */}
+        <label className="grid gap-2 md:col-span-2">
+          <span className="text-sm text-muted">Availability</span>
+          <select value={values.availability} onChange={(e) => update('availability', e.target.value)}
+            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.availability ? 'border-red-400/60' : 'border-border')}>
+            <option value="">Select availability</option>
+            {availabilityOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
-          {errors.experience && <span className="text-xs text-red-300">{errors.experience}</span>}
+          {errors.availability && <span className="text-xs text-red-300">{errors.availability}</span>}
         </label>
 
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Current Location</span>
-          <input
-            value={values.currentLocation}
-            onChange={(event) => update('currentLocation', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.currentLocation ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="Bangalore"
-          />
-          {errors.currentLocation && <span className="text-xs text-red-300">{errors.currentLocation}</span>}
-        </label>
-
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Preferred Location</span>
-          <input
-            value={values.preferredLocation}
-            onChange={(event) => update('preferredLocation', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.preferredLocation ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="Mumbai, Delhi, Pune, or remote"
-          />
-          {errors.preferredLocation && <span className="text-xs text-red-300">{errors.preferredLocation}</span>}
-        </label>
-
-        <fieldset className="grid gap-3 rounded-2xl border border-border bg-bg p-4 md:col-span-2">
-          <legend className="px-1 text-sm text-muted">Employment Type</legend>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {employmentOptions.map((type) => (
-              <label key={type} className="flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text transition-colors hover:border-accent/40">
-                <input
-                  type="checkbox"
-                  checked={values.employmentType.includes(type)}
-                  onChange={() => updateEmploymentType(type)}
-                  className="h-4 w-4 accent-accent"
-                />
-                {type}
-              </label>
-            ))}
-          </div>
-          {errors.employmentType && <span className="text-xs text-red-300">{errors.employmentType}</span>}
-        </fieldset>
-
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Expected Salary</span>
-          <input
-            value={values.expectedSalary}
-            onChange={(event) => update('expectedSalary', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.expectedSalary ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="₹6–9 LPA"
-          />
-          {errors.expectedSalary && <span className="text-xs text-red-300">{errors.expectedSalary}</span>}
-        </label>
-
-        {/* --- DYNAMIC CV SCANNER MODULE --- */}
+        {/* CV Upload with AI scanner */}
         <div className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">CV / Resume Upload</span>
-          
+          <span className="text-sm text-muted">Resume <span className="text-muted/50">(PDF only, max 5 MB)</span></span>
+
           <AnimatePresence mode="wait">
-            {/* 1. SCANNING STATE */}
             {isScanning && (
-              <motion.div
-                key="scanning"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="relative overflow-hidden rounded-2xl border border-accent/40 bg-accent-dim/10 p-6 text-center"
-              >
-                {/* Laser scan line anim */}
-                <motion.div
-                  animate={{ top: ['0%', '100%', '0%'] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent shadow-[0_0_8px_#2dd4bf] opacity-80"
-                />
+              <motion.div key="scanning" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                className="relative overflow-hidden rounded-2xl border border-accent/40 bg-accent-dim/10 p-6 text-center">
+                <motion.div animate={{ top: ['0%', '100%', '0%'] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent shadow-[0_0_8px_#2dd4bf] opacity-80" />
                 <div className="mx-auto flex h-10 w-10 animate-spin items-center justify-center rounded-full border-2 border-accent border-t-transparent text-accent mb-3" />
                 <p className="text-sm font-medium text-text">{scanStatus}</p>
                 <p className="mt-1 text-xs text-muted">Scanning layout structure and mapping competencies...</p>
               </motion.div>
             )}
 
-            {/* 2. SCAN COMPLETE STATE */}
             {!isScanning && scanComplete && (
-              <motion.div
-                key="complete"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="rounded-2xl border border-emerald-500/30 bg-emerald-950/5 p-6"
-              >
+              <motion.div key="complete" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+                className="rounded-2xl border border-emerald-500/30 bg-emerald-950/5 p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
-                      ✓
-                    </span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">✓</span>
                     <div>
                       <p className="text-sm font-medium text-text">AI Verification Successful</p>
                       <p className="text-xs text-muted truncate max-w-[250px] sm:max-w-md">{values.cv?.name}</p>
@@ -433,77 +310,44 @@ export function CandidateRegistrationForm() {
                       <p className="text-xs text-muted">Match Rating</p>
                       <p className="text-sm font-bold text-accent">{matchScore}% Match</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => updateCv(undefined)}
-                      className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-muted hover:text-text transition-colors"
-                    >
+                    <button type="button" onClick={() => updateCv(undefined)}
+                      className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-muted hover:text-text transition-colors">
                       Replace File
                     </button>
                   </div>
                 </div>
-
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wider text-muted mb-2.5">Extracted Competency Matrix</p>
                   <div className="flex flex-wrap gap-2">
                     {scannedTags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center rounded-lg border border-accent/20 bg-accent/5 px-2.5 py-1 text-xs text-accent">
-                        {tag}
-                      </span>
+                      <span key={tag} className="inline-flex items-center rounded-lg border border-accent/20 bg-accent/5 px-2.5 py-1 text-xs text-accent">{tag}</span>
                     ))}
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* 3. DEFAULT BROWSE FILE STATE */}
             {!isScanning && !scanComplete && (
               <motion.div key="browse" className="relative">
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={(event) => updateCv(event.target.files?.[0])}
-                  className="absolute inset-0 cursor-pointer opacity-0 z-10"
-                  aria-label="Upload CV"
-                />
-                <div className={cn(
-                  'flex min-h-14 items-center justify-between rounded-2xl border bg-bg px-4 text-sm transition-colors hover:border-accent/40',
-                  errors.cv ? 'border-red-400/60' : 'border-border'
-                )}>
-                  <span className="text-muted">Upload your CV (PDF, DOC, or DOCX)</span>
-                  <span className="ml-4 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent shrink-0">
-                    Browse
-                  </span>
+                <input type="file" accept=".pdf" onChange={(e) => updateCv(e.target.files?.[0])}
+                  className="absolute inset-0 cursor-pointer opacity-0 z-10" aria-label="Upload Resume PDF" />
+                <div className={cn('flex min-h-14 items-center justify-between rounded-2xl border bg-bg px-4 text-sm transition-colors hover:border-accent/40', errors.cv ? 'border-red-400/60' : 'border-border')}>
+                  <span className="text-muted">Upload your Resume (PDF only, max 5 MB)</span>
+                  <span className="ml-4 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent shrink-0">Browse</span>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-          
+
           {errors.cv && <span className="text-xs text-red-300">{errors.cv}</span>}
         </div>
 
+        {/* Cover Note (optional) */}
         <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">LinkedIn (optional)</span>
-          <input
-            value={values.linkedIn}
-            onChange={(event) => update('linkedIn', event.target.value)}
-            className={cn(
-              'h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20',
-              errors.linkedIn ? 'border-red-400/60' : 'border-border'
-            )}
-            placeholder="https://www.linkedin.com/in/your-profile"
-          />
-          {errors.linkedIn && <span className="text-xs text-red-300">{errors.linkedIn}</span>}
-        </label>
-
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Message</span>
-          <textarea
-            value={values.message}
-            onChange={(event) => update('message', event.target.value)}
+          <span className="text-sm text-muted">Cover Note <span className="text-muted/50">(optional)</span></span>
+          <textarea value={values.coverNote} onChange={(e) => update('coverNote', e.target.value)}
             className="min-h-32 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
-            placeholder="Share your availability, certifications, or preferred roles"
-          />
+            placeholder="Share anything specific about your availability, certifications, or role preferences" />
         </label>
       </div>
 
@@ -514,18 +358,11 @@ export function CandidateRegistrationForm() {
       )}
 
       <div className="mt-8">
-        <button
-          type="submit"
-          disabled={isSubmitting || isScanning}
-          className={cn(
-            'inline-flex h-12 items-center justify-center rounded-full border border-accent bg-accent px-6 text-sm font-medium text-bg transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent/30',
-            (isSubmitting || isScanning) && 'cursor-wait opacity-70'
-          )}
-        >
+        <button type="submit" disabled={isSubmitting || isScanning}
+          className={cn('inline-flex h-12 items-center justify-center rounded-full border border-accent bg-accent px-6 text-sm font-medium text-bg transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent/30', (isSubmitting || isScanning) && 'cursor-wait opacity-70')}>
           {isSubmitting ? 'Submitting...' : 'Submit My Profile'}
         </button>
       </div>
     </form>
   );
 }
-

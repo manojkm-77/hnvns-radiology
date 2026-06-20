@@ -2,89 +2,104 @@
 
 import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
-import { resend } from '@/lib/resend';
+import { sendMail } from '@/lib/gmail';
+import { appendRow } from '@/lib/sheets';
 
-type VacancyInput = {
+export type VacancyInput = {
   hospitalName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  specialization: string;
-  roleType: string;
-  urgency: string;
-  startDate: string;
-  requirements?: string;
+  location: string;
+  department: string;
+  role: string;
+  positions: number;
+  urgency: string;         // Routine | Urgent | Critical
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  notes?: string;
+  onboardingCall: boolean;
 };
 
-export async function submitVacancyAction(values: VacancyInput) {
+export async function submitVacancyAction(values: VacancyInput): Promise<
+  | { success: true; onboardingCall: boolean; meetingLink: string | null }
+  | { success: false; error: string }
+> {
   if (!hasRequiredEnv('DATABASE_URL')) {
     return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
   }
 
+  // 1. Save to DB
   try {
-    // 1. Save vacancy request to PostgreSQL database
-    const request = await prisma.vacancyRequest.create({
+    await prisma.vacancyRequest.create({
       data: {
         hospitalName: values.hospitalName,
-        contactPerson: values.contactPerson,
-        email: values.email,
-        phone: values.phone,
-        specialization: values.specialization,
-        roleType: values.roleType,
+        location: values.location,
+        department: values.department,
+        role: values.role,
+        positions: values.positions,
         urgency: values.urgency,
-        startDate: new Date(values.startDate),
-        requirements: values.requirements || null,
+        contactName: values.contactName,
+        contactPhone: values.contactPhone,
+        contactEmail: values.contactEmail,
+        notes: values.notes || null,
+        onboardingCall: values.onboardingCall,
+        status: 'new',
       },
     });
-
-    // 2. Send email notification if Resend is configured
-    if (resend) {
-      const adminEmail = process.env.ADMIN_EMAIL ?? 'partnerships@hnvns.example';
-      
-      try {
-        await resend.emails.send({
-          from: 'HNVNS Staffing System <system@hnvns.example>',
-          to: [adminEmail],
-          subject: `🚨 [${values.urgency} Vacancy] ${values.hospitalName} - ${values.specialization}`,
-          html: `
-            <h2>New Staffing Vacancy Submitted</h2>
-            <p><strong>Hospital:</strong> ${values.hospitalName}</p>
-            <p><strong>Contact Person:</strong> ${values.contactPerson}</p>
-            <p><strong>Email:</strong> ${values.email}</p>
-            <p><strong>Phone:</strong> ${values.phone}</p>
-            <p><strong>Specialization:</strong> ${values.specialization}</p>
-            <p><strong>Role Type:</strong> ${values.roleType}</p>
-            <p><strong>Urgency Tier:</strong> ${values.urgency}</p>
-            <p><strong>Start Date:</strong> ${values.startDate}</p>
-            <p><strong>Additional Requirements:</strong></p>
-            <blockquote style="background: #f0f0f0; padding: 10px; border-left: 4px solid #00f;">
-              ${values.requirements ? values.requirements.replace(/\n/g, '<br>') : 'None'}
-            </blockquote>
-          `,
-        });
-
-        // Also send confirmation to the submitter
-        await resend.emails.send({
-          from: 'HNVNS Staffing <partnerships@hnvns.example>',
-          to: [values.email],
-          subject: 'HNVNS Staffing Request Received',
-          html: `
-            <h3>Hello ${values.contactPerson},</h3>
-            <p>We have received your staffing request for a <strong>${values.specialization} (${values.roleType})</strong> position at <strong>${values.hospitalName}</strong>.</p>
-            <p>Our clinical operations team will review your requirements and follow up within 18 hours with a shortlist of pre-verified candidates.</p>
-            <br>
-            <p>Best regards,</p>
-            <p><strong>HNVNS Staffing Team</strong></p>
-          `,
-        });
-      } catch (emailError) {
-        console.error('Failed to send Resend emails:', emailError);
-      }
-    }
-
-    return { success: true, data: request };
-  } catch (dbError) {
-    console.error('Database save error:', dbError);
+  } catch (dbErr) {
+    console.error('VacancyRequest DB save failed:', dbErr);
     return { success: false, error: 'Database save failed. Please try again.' };
   }
+
+  const ts = new Date().toISOString();
+
+  // 2. Append to Google Sheet (fire-and-forget, non-fatal)
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (sheetId) {
+    await appendRow(sheetId, [
+      ts,
+      values.hospitalName,
+      values.location,
+      values.department,
+      values.role,
+      values.positions,
+      values.urgency,
+      values.contactName,
+      values.contactPhone,
+      values.contactEmail,
+      values.notes ?? '',
+      values.onboardingCall ? 'Yes' : 'No',
+    ]);
+  }
+
+  // 3. Gmail notification to admin
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    await sendMail({
+      to: adminEmail,
+      subject: `New Vacancy – ${values.hospitalName} – ${values.role} – ${values.urgency}`,
+      html: `
+        <h2 style="font-family:sans-serif">New Vacancy Submission</h2>
+        <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Hospital</td><td style="padding:8px;border:1px solid #ddd">${values.hospitalName}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${values.location}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Department</td><td style="padding:8px;border:1px solid #ddd">${values.department}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Role Needed</td><td style="padding:8px;border:1px solid #ddd">${values.role}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Positions</td><td style="padding:8px;border:1px solid #ddd">${values.positions}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Urgency</td><td style="padding:8px;border:1px solid #ddd">${values.urgency}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Name</td><td style="padding:8px;border:1px solid #ddd">${values.contactName}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Phone</td><td style="padding:8px;border:1px solid #ddd">${values.contactPhone}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Email</td><td style="padding:8px;border:1px solid #ddd">${values.contactEmail}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Notes</td><td style="padding:8px;border:1px solid #ddd">${values.notes ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Onboarding Call</td><td style="padding:8px;border:1px solid #ddd">${values.onboardingCall ? 'Yes' : 'No'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
+        </table>
+      `,
+    });
+  }
+
+  return {
+    success: true,
+    onboardingCall: values.onboardingCall,
+    meetingLink: values.onboardingCall ? (process.env.MEETING_LINK ?? null) : null,
+  };
 }

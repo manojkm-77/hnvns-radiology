@@ -8,31 +8,54 @@ generator client {
 }
 
 model Job {
-  id             String    @id @default(uuid())
-  title          String
-  hospital       String
-  location       String
-  type           String    // Full-Time, Contract, Locum
-  salary         String
-  postedAt       DateTime  @default(now())
-  specialization String
-  status         String    @default("open") // featured, urgent, new, open
-  description    String?
+  id               String   @id @default(uuid())
+  title            String
+  hospital         String
+  location         String
+  type             String
+  salary           String
+  postedAt         DateTime @default(now())
+  specialization   String
+  status           String   @default("open")
+  description      String?
   responsibilities String[]
-  requirements   String[]
-  benefits       String[]
+  requirements     String[]
+  benefits         String[]
 }
 
-model Candidate {
+model VacancyRequest {
   id             String   @id @default(uuid())
-  name           String
-  email          String
-  phone          String
-  specialization String
-  availability   String
-  resumeUrl      String?
-  jobId          String?
-  registeredAt   DateTime @default(now())
+  hospitalName   String
+  location       String
+  department     String
+  role           String
+  positions      Int      @default(1)
+  urgency        String   // Routine | Urgent | Critical
+  contactName    String
+  contactPhone   String
+  contactEmail   String
+  notes          String?
+  onboardingCall Boolean  @default(false)
+  status         String   @default("new")
+  createdAt      DateTime @default(now())
+}
+
+model CandidateApplication {
+  id               String   @id @default(uuid())
+  fullName         String
+  email            String
+  phone            String
+  location         String
+  experienceYears  Int
+  specialization   String
+  currentEmployer  String?
+  salaryRange      String
+  availability     String   // Immediate | 15 days | 30 days | 60 days
+  resumeUrl        String?
+  jobId            String?
+  coverNote        String?
+  status           String   @default("new")
+  createdAt        DateTime @default(now())
 }
 
 model ContactMessage {
@@ -54,18 +77,4 @@ model InsightPost {
   author      String
   category    String
   publishedAt DateTime @default(now())
-}
-
-model VacancyRequest {
-  id             String   @id @default(uuid())
-  hospitalName   String
-  contactPerson  String
-  email          String
-  phone          String
-  specialization String
-  roleType       String
-  urgency        String
-  startDate      DateTime
-  requirements   String?
-  submittedAt    DateTime @default(now())
 }

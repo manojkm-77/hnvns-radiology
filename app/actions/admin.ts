@@ -32,12 +32,12 @@ export async function getAdminDataAction(passcode: string) {
       orderBy: { postedAt: 'desc' },
     });
 
-    const candidates = await prisma.candidate.findMany({
-      orderBy: { registeredAt: 'desc' },
+    const candidates = await prisma.candidateApplication.findMany({
+      orderBy: { createdAt: 'desc' },
     });
 
     const vacancyRequests = await prisma.vacancyRequest.findMany({
-      orderBy: { submittedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
 
     return {

@@ -9,21 +9,20 @@ export async function getCandidateApplicationsAction(email: string) {
   }
 
   try {
-    const applications = await prisma.candidate.findMany({
+    const applications = await prisma.candidateApplication.findMany({
       where: { email },
-      orderBy: { registeredAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
-        name: true,
+        fullName: true,
         specialization: true,
         jobId: true,
-        registeredAt: true,
+        createdAt: true,
         availability: true,
         resumeUrl: true,
       },
     });
 
-    // If there are jobIds, fetch job titles for display
     const jobIds = applications
       .map((a) => a.jobId)
       .filter((id): id is string => Boolean(id));
@@ -40,6 +39,7 @@ export async function getCandidateApplicationsAction(email: string) {
 
     const enriched = applications.map((a) => ({
       ...a,
+      registeredAt: a.createdAt,
       job: a.jobId ? (jobMap.get(a.jobId) ?? null) : null,
     }));
 
@@ -57,16 +57,15 @@ export async function getHospitalVacanciesAction(email: string) {
 
   try {
     const vacancies = await prisma.vacancyRequest.findMany({
-      where: { email },
-      orderBy: { submittedAt: 'desc' },
+      where: { contactEmail: email },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         hospitalName: true,
-        specialization: true,
-        roleType: true,
+        role: true,
+        department: true,
         urgency: true,
-        startDate: true,
-        submittedAt: true,
+        createdAt: true,
       },
     });
 

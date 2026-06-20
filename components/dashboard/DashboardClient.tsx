@@ -24,11 +24,10 @@ type CandidateRow = {
 type HospitalRow = {
   id: string;
   hospitalName: string;
-  specialization: string;
-  roleType: string;
+  role: string;
+  department: string;
   urgency: string;
-  startDate: Date | string;
-  submittedAt: Date | string;
+  createdAt: Date | string;
 };
 
 function formatDate(d: Date | string) {
@@ -285,9 +284,8 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
                 <thead>
                   <tr className="border-b border-border text-xs uppercase tracking-widest text-muted bg-bg/50">
                     <th className="py-4 px-6">Hospital</th>
-                    <th className="py-4 px-6">Role / Specialization</th>
+                    <th className="py-4 px-6">Role / Department</th>
                     <th className="py-4 px-6">Urgency</th>
-                    <th className="py-4 px-6">Start Date</th>
                     <th className="py-4 px-6">Submitted</th>
                     <th className="py-4 px-6 text-right">Status</th>
                   </tr>
@@ -297,16 +295,16 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
                     <tr key={row.id} className="hover:bg-bg/25 transition-colors">
                       <td className="py-4 px-6 font-medium text-text">{row.hospitalName}</td>
                       <td className="py-4 px-6">
-                        <p className="text-text">{row.specialization}</p>
-                        <p className="text-xs text-muted">{row.roleType}</p>
+                        <p className="text-text">{row.role}</p>
+                        <p className="text-xs text-muted">{row.department}</p>
                       </td>
                       <td className="py-4 px-6">
-                        <Badge variant={row.urgency === 'Urgent' ? 'urgent' : row.urgency === 'Locum' ? 'featured' : 'teal'}>
+                        <Badge variant={row.urgency === 'Critical' ? 'urgent' : row.urgency === 'Urgent' ? 'featured' : 'teal'}>
                           {row.urgency}
                         </Badge>
                       </td>
-                      <td className="py-4 px-6 text-muted">{formatDate(row.startDate)}</td>
-                      <td className="py-4 px-6 text-muted">{formatDate(row.submittedAt)}</td>
+                      <td className="py-4 px-6 text-muted">{formatDate(row.createdAt)}</td>
+                      <td className="py-4 px-6 text-muted">{formatDate(row.createdAt)}</td>
                       <td className="py-4 px-6 text-right"><Badge variant="teal">In Review</Badge></td>
                     </tr>
                   ))}

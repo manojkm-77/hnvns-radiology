@@ -29,27 +29,29 @@ type JobType = {
 
 type CandidateType = {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
   specialization: string;
   availability: string;
   resumeUrl: string | null;
-  registeredAt: Date | string;
+  createdAt: Date | string;
 };
 
 type VacancyRequestType = {
   id: string;
   hospitalName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  specialization: string;
-  roleType: string;
+  location: string;
+  department: string;
+  role: string;
+  positions: number;
   urgency: string;
-  startDate: Date | string;
-  requirements: string | null;
-  submittedAt: Date | string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  notes: string | null;
+  onboardingCall: boolean;
+  createdAt: Date | string;
 };
 
 const initialJobForm = {
@@ -391,7 +393,7 @@ export function AdminDashboardClient() {
                   {candidates.slice(0, 4).map((c) => (
                     <div key={c.id} className="py-3 flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-text">{c.name}</p>
+                        <p className="text-sm font-medium text-text">{c.fullName}</p>
                         <p className="text-xs text-muted">{c.specialization} · {c.email}</p>
                       </div>
                       <Badge variant="teal">Registered</Badge>
@@ -414,9 +416,9 @@ export function AdminDashboardClient() {
                     <div key={r.id} className="py-3 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-text">{r.hospitalName}</p>
-                        <p className="text-xs text-muted">{r.specialization} · {r.contactPerson}</p>
+                        <p className="text-xs text-muted">{r.role} · {r.contactName}</p>
                       </div>
-                      <Badge variant={r.urgency === 'Urgent' ? 'urgent' : r.urgency === 'Locum' ? 'featured' : 'teal'}>
+                      <Badge variant={r.urgency === 'Critical' ? 'urgent' : r.urgency === 'Urgent' ? 'featured' : 'teal'}>
                         {r.urgency}
                       </Badge>
                     </div>
@@ -527,7 +529,7 @@ export function AdminDashboardClient() {
                 <tbody className="divide-y divide-border/60 text-sm text-text">
                   {candidates.map((c) => (
                     <tr key={c.id} className="hover:bg-bg/25 transition-colors">
-                      <td className="py-4 px-6 font-medium text-text">{c.name}</td>
+                      <td className="py-4 px-6 font-medium text-text">{c.fullName}</td>
                       <td className="py-4 px-6 text-accent">{c.specialization}</td>
                       <td className="py-4 px-6">
                         <p className="text-text">{c.email}</p>
@@ -537,7 +539,7 @@ export function AdminDashboardClient() {
                         {c.availability}
                       </td>
                       <td className="py-4 px-6 text-xs text-muted">
-                        {new Date(c.registeredAt).toLocaleDateString(undefined, {
+                        {new Date(c.createdAt).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'
@@ -583,12 +585,12 @@ export function AdminDashboardClient() {
                 <thead>
                   <tr className="border-b border-border text-xs uppercase tracking-widest text-muted bg-bg/50">
                     <th className="py-4 px-6">Hospital</th>
-                    <th className="py-4 px-6">Specialization / Role</th>
-                    <th className="py-4 px-6">Contact details</th>
-                    <th className="py-4 px-6">Target Start</th>
-                    <th className="py-4 px-6">Urgency</th>
-                    <th className="py-4 px-6">Requirements</th>
+                    <th className="py-4 px-6">Role / Department</th>
+                    <th className="py-4 px-6">Contact</th>
                     <th className="py-4 px-6">Submitted</th>
+                    <th className="py-4 px-6">Urgency</th>
+                    <th className="py-4 px-6">Notes</th>
+                    <th className="py-4 px-6">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60 text-sm text-text">
@@ -598,30 +600,30 @@ export function AdminDashboardClient() {
                         {r.hospitalName}
                       </td>
                       <td className="py-4 px-6">
-                        <p className="text-text">{r.specialization}</p>
-                        <p className="text-xs text-muted">{r.roleType}</p>
+                        <p className="text-text">{r.role}</p>
+                        <p className="text-xs text-muted">{r.department}</p>
                       </td>
                       <td className="py-4 px-6">
-                        <p className="text-text">{r.contactPerson}</p>
-                        <p className="text-xs text-muted">{r.email} · {r.phone}</p>
+                        <p className="text-text">{r.contactName}</p>
+                        <p className="text-xs text-muted">{r.contactEmail} · {r.contactPhone}</p>
                       </td>
                       <td className="py-4 px-6 text-muted">
-                        {new Date(r.startDate).toLocaleDateString(undefined, {
+                        {new Date(r.createdAt).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'
                         })}
                       </td>
                       <td className="py-4 px-6">
-                        <Badge variant={r.urgency === 'Urgent' ? 'urgent' : r.urgency === 'Locum' ? 'featured' : 'teal'}>
+                        <Badge variant={r.urgency === 'Critical' ? 'urgent' : r.urgency === 'Urgent' ? 'featured' : 'teal'}>
                           {r.urgency}
                         </Badge>
                       </td>
                       <td className="py-4 px-6 max-w-sm text-xs text-muted whitespace-pre-wrap truncate leading-relaxed">
-                        {r.requirements || <span className="italic text-muted/50">None</span>}
+                        {r.notes || <span className="italic text-muted/50">None</span>}
                       </td>
                       <td className="py-4 px-6 text-xs text-muted">
-                        {new Date(r.submittedAt).toLocaleDateString(undefined, {
+                        {new Date(r.createdAt).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric'
                         })}

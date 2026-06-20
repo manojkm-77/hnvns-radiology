@@ -2,79 +2,104 @@
 
 import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
-import { resend } from '@/lib/resend';
+import { sendMail } from '@/lib/gmail';
+import { appendRow } from '@/lib/sheets';
 
-type CandidateInput = {
-  name: string;
+export type CandidateInput = {
+  fullName: string;
   email: string;
   phone: string;
+  location: string;
+  experienceYears: number;
   specialization: string;
-  availability: string;
+  currentEmployer?: string;
+  salaryRange: string;
+  availability: string;    // Immediate | 15 days | 30 days | 60 days
   resumeUrl?: string;
   jobId?: string;
+  coverNote?: string;
 };
 
-export async function registerCandidateAction(values: CandidateInput) {
+export async function registerCandidateAction(values: CandidateInput): Promise<
+  | { success: true }
+  | { success: false; error: string }
+> {
   if (!hasRequiredEnv('DATABASE_URL')) {
     return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
   }
 
+  // 1. Save to DB
   try {
-    // 1. Save candidate to PostgreSQL database
-    const candidate = await prisma.candidate.create({
+    await prisma.candidateApplication.create({
       data: {
-        name: values.name,
+        fullName: values.fullName,
         email: values.email,
         phone: values.phone,
+        location: values.location,
+        experienceYears: values.experienceYears,
         specialization: values.specialization,
+        currentEmployer: values.currentEmployer || null,
+        salaryRange: values.salaryRange,
         availability: values.availability,
         resumeUrl: values.resumeUrl || null,
         jobId: values.jobId || null,
+        coverNote: values.coverNote || null,
+        status: 'new',
       },
     });
-
-    // 2. Send email notification if Resend is configured
-    if (resend) {
-      const adminEmail = process.env.ADMIN_EMAIL ?? 'partnerships@hnvns.example';
-      
-      try {
-        await resend.emails.send({
-          from: 'HNVNS Talent Network <system@hnvns.example>',
-          to: [adminEmail],
-          subject: `✨ [New Candidate] ${values.name} - ${values.specialization}`,
-          html: `
-            <h2>New Candidate Registered</h2>
-            <p><strong>Name:</strong> ${values.name}</p>
-            <p><strong>Email:</strong> ${values.email}</p>
-            <p><strong>Phone:</strong> ${values.phone}</p>
-            <p><strong>Specialization:</strong> ${values.specialization}</p>
-            <p><strong>Availability:</strong> ${values.availability}</p>
-            <p><strong>Resume/Credentials:</strong> ${values.resumeUrl ? `<a href="${values.resumeUrl}">View Resume File</a>` : 'Not uploaded'}</p>
-          `,
-        });
-
-        // Also send confirmation to the candidate
-        await resend.emails.send({
-          from: 'HNVNS Talent Team <onboarding@hnvns.example>',
-          to: [values.email],
-          subject: 'Welcome to the HNVNS Talent Network!',
-          html: `
-            <h3>Hello ${values.name},</h3>
-            <p>Thank you for submitting your profile to the HNVNS talent network as a <strong>${values.specialization}</strong> specialist.</p>
-            <p>Our verification coordinators will review your credentials and availability. Your profile will remain private until we match you to a role and you explicitly approve applying.</p>
-            <br>
-            <p>Best regards,</p>
-            <p><strong>HNVNS Onboarding Team</strong></p>
-          `,
-        });
-      } catch (emailError) {
-        console.error('Failed to send Resend emails:', emailError);
-      }
-    }
-
-    return { success: true, data: candidate };
-  } catch (dbError) {
-    console.error('Database save error:', dbError);
+  } catch (dbErr) {
+    console.error('CandidateApplication DB save failed:', dbErr);
     return { success: false, error: 'Database save failed. Please try again.' };
   }
+
+  const ts = new Date().toISOString();
+
+  // 2. Append to Google Sheet (fire-and-forget, non-fatal)
+  const sheetId = process.env.CANDIDATES_SHEET_ID;
+  if (sheetId) {
+    await appendRow(sheetId, [
+      ts,
+      values.fullName,
+      values.email,
+      values.phone,
+      values.location,
+      values.experienceYears,
+      values.specialization,
+      values.currentEmployer ?? '',
+      values.salaryRange,
+      values.availability,
+      values.resumeUrl ?? '',
+      values.jobId ?? '',
+      values.coverNote ?? '',
+    ]);
+  }
+
+  // 3. Gmail notification to admin
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    await sendMail({
+      to: adminEmail,
+      subject: `New Candidate – ${values.fullName} – ${values.specialization} – ${values.availability}`,
+      html: `
+        <h2 style="font-family:sans-serif">New Candidate Application</h2>
+        <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${values.fullName}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${values.email}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${values.phone}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${values.location}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Experience</td><td style="padding:8px;border:1px solid #ddd">${values.experienceYears} year(s)</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${values.specialization}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${values.currentEmployer ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${values.salaryRange}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${values.availability}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${values.resumeUrl ? `<a href="${values.resumeUrl}">Download Resume</a>` : '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${values.jobId ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${values.coverNote ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
+        </table>
+      `,
+    });
+  }
+
+  return { success: true };
 }
