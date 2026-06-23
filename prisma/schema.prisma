@@ -21,6 +21,7 @@ model Job {
   responsibilities String[]
   requirements     String[]
   benefits         String[]
+  applications     CandidateApplication[]
 }
 
 model VacancyRequest {
@@ -53,6 +54,7 @@ model CandidateApplication {
   availability     String   // Immediate | 15 days | 30 days | 60 days
   resumeUrl        String?
   jobId            String?
+  job              Job?     @relation(fields: [jobId], references: [id])
   coverNote        String?
   status           String   @default("new")
   createdAt        DateTime @default(now())

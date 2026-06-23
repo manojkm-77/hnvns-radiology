@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 import { RevealSection } from '@/components/animations/RevealSection';
+import sanitizeHtml from 'sanitize-html';
 
 // Static fallback articles — used when DB is unavailable or article is not in DB yet
 const staticArticles = [
@@ -182,8 +183,11 @@ export default async function InsightDetailPage({ params }: Props) {
                 );
               }
 
-              // Regular paragraph — inline bold rendering
-              const rendered = para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+              // Regular paragraph — inline bold rendering, sanitized for XSS safety
+              const rendered = sanitizeHtml(
+                para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'),
+                { allowedTags: ['strong'], allowedAttributes: {} },
+              );
               return (
                 <p
                   key={i}
