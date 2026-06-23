@@ -5,9 +5,24 @@ import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 import { resend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/html';
+import { checkRateLimit } from '@/lib/ratelimit';
+import { headers } from 'next/headers';
 import { setDashboardSession, verifyDashboardSession } from '@/lib/auth';
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+// 5 OTP requests per 15 minutes per IP
+const OTP_RATE_LIMIT = 5;
+const OTP_RATE_WINDOW_MS = 15 * 60 * 1000;
+
+function getIp(): string {
+  const h = headers();
+  return (
+    h.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    h.get('x-real-ip') ??
+    'unknown'
+  );
+}
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -35,6 +50,11 @@ export async function requestOtpAction(email: string): Promise<OtpRequestResult>
   const normalized = normalizeEmail(email);
   if (!isValidEmail(normalized)) {
     return { success: false, error: 'Enter a valid email address.' };
+  }
+
+  const ip = getIp();
+  if (!checkRateLimit(`otp:${ip}`, OTP_RATE_LIMIT, OTP_RATE_WINDOW_MS)) {
+    return { success: false, error: 'Too many requests. Please wait before trying again.' };
   }
 
   if (!hasRequiredEnv('DATABASE_URL')) {
@@ -73,7 +93,7 @@ export async function requestOtpAction(email: string): Promise<OtpRequestResult>
       console.error('Failed to send OTP email:', err);
       return { success: false, error: 'Could not send the login code. Please try again.' };
     }
-  } else {
+  } else if (process.env.NODE_ENV === 'development') {
     console.log(`[DEV] Dashboard OTP for ${normalized}: ${code}`);
   }
 

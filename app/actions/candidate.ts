@@ -5,6 +5,21 @@ import { hasRequiredEnv } from '@/lib/env';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
 import { escapeHtml } from '@/lib/html';
+import { checkRateLimit } from '@/lib/ratelimit';
+import { headers } from 'next/headers';
+
+// 3 candidate registrations per 15 minutes per IP
+const CANDIDATE_RATE_LIMIT = 3;
+const CANDIDATE_RATE_WINDOW_MS = 15 * 60 * 1000;
+
+function getIp(): string {
+  const h = headers();
+  return (
+    h.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    h.get('x-real-ip') ??
+    'unknown'
+  );
+}
 
 export type CandidateInput = {
   fullName: string;
@@ -25,6 +40,11 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
   | { success: true }
   | { success: false; error: string }
 > {
+  const ip = getIp();
+  if (!checkRateLimit(`candidate:${ip}`, CANDIDATE_RATE_LIMIT, CANDIDATE_RATE_WINDOW_MS)) {
+    return { success: false, error: 'Too many submissions. Please wait before trying again.' };
+  }
+
   if (!hasRequiredEnv('DATABASE_URL')) {
     return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
   }

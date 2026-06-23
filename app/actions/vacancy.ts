@@ -5,6 +5,21 @@ import { hasRequiredEnv } from '@/lib/env';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
 import { escapeHtml } from '@/lib/html';
+import { checkRateLimit } from '@/lib/ratelimit';
+import { headers } from 'next/headers';
+
+// 5 vacancy submissions per 15 minutes per IP
+const VACANCY_RATE_LIMIT = 5;
+const VACANCY_RATE_WINDOW_MS = 15 * 60 * 1000;
+
+function getIp(): string {
+  const h = headers();
+  return (
+    h.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    h.get('x-real-ip') ??
+    'unknown'
+  );
+}
 
 export type VacancyInput = {
   hospitalName: string;
@@ -24,6 +39,11 @@ export async function submitVacancyAction(values: VacancyInput): Promise<
   | { success: true; onboardingCall: boolean; meetingLink: string | null }
   | { success: false; error: string }
 > {
+  const ip = getIp();
+  if (!checkRateLimit(`vacancy:${ip}`, VACANCY_RATE_LIMIT, VACANCY_RATE_WINDOW_MS)) {
+    return { success: false, error: 'Too many submissions. Please wait before trying again.' };
+  }
+
   if (!hasRequiredEnv('DATABASE_URL')) {
     return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
   }
