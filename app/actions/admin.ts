@@ -70,7 +70,12 @@ export async function adminLoginAction(passcode: string) {
     return { success: false, error: (err as Error).message };
   }
 
-  await setAdminSession();
+  try {
+    await setAdminSession();
+  } catch (err) {
+    console.error('Failed to create admin session:', err);
+    return { success: false, error: 'Failed to create session. Please try again.' };
+  }
   return { success: true };
 }
 

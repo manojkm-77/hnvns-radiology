@@ -80,11 +80,15 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   // Buffer the body so we can (a) verify magic bytes and (b) enforce size while streaming
+  if (!request.body) {
+    return NextResponse.json({ error: 'Request body is empty.' }, { status: 400 });
+  }
+
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
 
   try {
-    const reader = request.body!.getReader();
+    const reader = request.body.getReader();
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -120,6 +124,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json(blob);
   } catch (error) {
     console.error('File upload error:', error);
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to store the uploaded file. Please try again.' },
+      { status: 500 }
+    );
   }
 }

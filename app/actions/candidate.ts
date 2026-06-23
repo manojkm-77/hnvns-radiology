@@ -55,56 +55,64 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
 
   const ts = new Date().toISOString();
 
-  // 2. Append to Google Sheet (fire-and-forget, non-fatal)
+  // 2. Append to Google Sheet (non-fatal)
   const sheetId = process.env.CANDIDATES_SHEET_ID;
   if (sheetId) {
-    await appendRow(sheetId, [
-      ts,
-      values.fullName,
-      values.email,
-      values.phone,
-      values.location,
-      values.experienceYears,
-      values.specialization,
-      values.currentEmployer ?? '',
-      values.salaryRange,
-      values.availability,
-      values.resumeUrl ?? '',
-      values.jobId ?? '',
-      values.coverNote ?? '',
-    ]);
+    try {
+      await appendRow(sheetId, [
+        ts,
+        values.fullName,
+        values.email,
+        values.phone,
+        values.location,
+        values.experienceYears,
+        values.specialization,
+        values.currentEmployer ?? '',
+        values.salaryRange,
+        values.availability,
+        values.resumeUrl ?? '',
+        values.jobId ?? '',
+        values.coverNote ?? '',
+      ]);
+    } catch (sheetErr) {
+      console.error('CandidateApplication sheet append failed:', sheetErr);
+    }
   }
 
-  // 3. Gmail notification to admin — all user values HTML-escaped
+  // 3. Gmail notification to admin — all user values HTML-escaped (non-fatal)
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail) {
-    const e = escapeHtml;
-    const resumeCell = values.resumeUrl
-      ? `<a href="${e(values.resumeUrl)}">Download Resume</a>`
-      : '—';
+    try {
+      const e = escapeHtml;
+      const resumeCell = values.resumeUrl
+        ? `<a href="${e(values.resumeUrl)}">Download Resume</a>`
+        : '—';
 
-    await sendMail({
-      to: adminEmail,
-      subject: `New Candidate – ${values.fullName} – ${values.specialization} – ${values.availability}`,
-      html: `
-        <h2 style="font-family:sans-serif">New Candidate Application</h2>
-        <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.fullName)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.email)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.phone)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Experience</td><td style="padding:8px;border:1px solid #ddd">${values.experienceYears} year(s)</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${e(values.specialization)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${e(values.currentEmployer) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${e(values.salaryRange)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${e(values.availability)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${resumeCell}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${e(values.jobId) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${e(values.coverNote) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
-        </table>
-      `,
-    });
+      await sendMail({
+        to: adminEmail,
+        subject: `New Candidate – ${values.fullName} – ${values.specialization} – ${values.availability}`,
+        html: `
+          <h2 style="font-family:sans-serif">New Candidate Application</h2>
+          <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.fullName)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.email)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.phone)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Experience</td><td style="padding:8px;border:1px solid #ddd">${values.experienceYears} year(s)</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${e(values.specialization)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${e(values.currentEmployer) || '—'}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${e(values.salaryRange)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${e(values.availability)}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${resumeCell}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${e(values.jobId) || '—'}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${e(values.coverNote) || '—'}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
+          </table>
+        `,
+      });
+    } catch (mailErr) {
+      console.error('CandidateApplication email notification failed:', mailErr);
+    }
   }
 
   return { success: true };

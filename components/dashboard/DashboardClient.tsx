@@ -107,26 +107,31 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
     setLoading(true);
     setError('');
 
-    if (selectedRole === 'candidate') {
-      const res = await getCandidateApplicationsAction();
-      if (res.success) {
-        setCandidateRows(res.data as CandidateRow[]);
+    try {
+      if (selectedRole === 'candidate') {
+        const res = await getCandidateApplicationsAction();
+        if (res.success) {
+          setCandidateRows(res.data as CandidateRow[]);
+        } else {
+          setError(res.error ?? 'Failed to load data.');
+          if (res.error === 'Session expired') { setStep('email'); return; }
+        }
       } else {
-        setError(res.error ?? 'Failed to load data.');
-        if (res.error === 'Session expired') { setStep('email'); return; }
+        const res = await getHospitalVacanciesAction();
+        if (res.success) {
+          setHospitalRows(res.data as HospitalRow[]);
+        } else {
+          setError(res.error ?? 'Failed to load data.');
+          if (res.error === 'Session expired') { setStep('email'); return; }
+        }
       }
-    } else {
-      const res = await getHospitalVacanciesAction();
-      if (res.success) {
-        setHospitalRows(res.data as HospitalRow[]);
-      } else {
-        setError(res.error ?? 'Failed to load data.');
-        if (res.error === 'Session expired') { setStep('email'); return; }
-      }
-    }
 
-    setLoading(false);
-    setStep('data');
+      setStep('data');
+    } catch (err) {
+      setError('An error occurred while loading your data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const selectRole = (r: Role) => {
