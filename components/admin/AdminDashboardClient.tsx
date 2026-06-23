@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { formatDate, formatDateShort } from '@/lib/format';
+import { urgencyBadgeVariant } from '@/lib/urgency';
 import {
   getAdminDataAction,
   createJobAction,
@@ -441,7 +443,7 @@ export function AdminDashboardClient() {
                         <p className="text-sm font-medium text-text">{r.hospitalName}</p>
                         <p className="text-xs text-muted">{r.role} · {r.contactName}</p>
                       </div>
-                      <Badge variant={r.urgency === 'Critical' ? 'urgent' : r.urgency === 'Urgent' ? 'featured' : 'teal'}>
+                      <Badge variant={urgencyBadgeVariant(r.urgency)}>
                         {r.urgency}
                       </Badge>
                     </div>
@@ -562,11 +564,7 @@ export function AdminDashboardClient() {
                         {c.availability}
                       </td>
                       <td className="py-4 px-6 text-xs text-muted">
-                        {new Date(c.createdAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
+                        {formatDate(c.createdAt)}
                       </td>
                       <td className="py-4 px-6 text-right">
                         {c.resumeUrl ? (
@@ -631,14 +629,10 @@ export function AdminDashboardClient() {
                         <p className="text-xs text-muted">{r.contactEmail} · {r.contactPhone}</p>
                       </td>
                       <td className="py-4 px-6 text-muted">
-                        {new Date(r.createdAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
+                        {formatDate(r.createdAt)}
                       </td>
                       <td className="py-4 px-6">
-                        <Badge variant={r.urgency === 'Critical' ? 'urgent' : r.urgency === 'Urgent' ? 'featured' : 'teal'}>
+                        <Badge variant={urgencyBadgeVariant(r.urgency)}>
                           {r.urgency}
                         </Badge>
                       </td>
@@ -646,10 +640,7 @@ export function AdminDashboardClient() {
                         {r.notes || <span className="italic text-muted/50">None</span>}
                       </td>
                       <td className="py-4 px-6 text-xs text-muted">
-                        {new Date(r.createdAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+                        {formatDateShort(r.createdAt)}
                       </td>
                     </tr>
                   ))}

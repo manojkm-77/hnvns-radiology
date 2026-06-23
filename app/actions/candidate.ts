@@ -1,10 +1,11 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { hasRequiredEnv } from '@/lib/env';
+import { requireDatabase } from '@/lib/action-guards';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
 import { escapeHtml } from '@/lib/html';
+import { buildEmailTable } from '@/lib/email-template';
 
 export type CandidateInput = {
   fullName: string;
@@ -25,11 +26,9 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
   | { success: true }
   | { success: false; error: string }
 > {
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
-  // 1. Save to DB
   try {
     await prisma.candidateApplication.create({
       data: {
@@ -55,7 +54,6 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
 
   const ts = new Date().toISOString();
 
-  // 2. Append to Google Sheet (fire-and-forget, non-fatal)
   const sheetId = process.env.CANDIDATES_SHEET_ID;
   if (sheetId) {
     await appendRow(sheetId, [
@@ -75,35 +73,30 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
     ]);
   }
 
-  // 3. Gmail notification to admin — all user values HTML-escaped
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail) {
-    const e = escapeHtml;
     const resumeCell = values.resumeUrl
-      ? `<a href="${e(values.resumeUrl)}">Download Resume</a>`
+      ? `<a href="${escapeHtml(values.resumeUrl)}">Download Resume</a>`
       : '—';
 
     await sendMail({
       to: adminEmail,
       subject: `New Candidate – ${values.fullName} – ${values.specialization} – ${values.availability}`,
-      html: `
-        <h2 style="font-family:sans-serif">New Candidate Application</h2>
-        <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.fullName)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.email)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.phone)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Experience</td><td style="padding:8px;border:1px solid #ddd">${values.experienceYears} year(s)</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${e(values.specialization)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${e(values.currentEmployer) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${e(values.salaryRange)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${e(values.availability)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${resumeCell}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${e(values.jobId) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${e(values.coverNote) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
-        </table>
-      `,
+      html: buildEmailTable('New Candidate Application', [
+        { label: 'Name', value: values.fullName },
+        { label: 'Email', value: values.email },
+        { label: 'Phone', value: values.phone },
+        { label: 'Location', value: values.location },
+        { label: 'Experience', value: `${values.experienceYears} year(s)` },
+        { label: 'Specialization', value: values.specialization },
+        { label: 'Current Employer', value: values.currentEmployer },
+        { label: 'Expected Salary', value: values.salaryRange },
+        { label: 'Availability', value: values.availability },
+        { label: 'Resume', value: resumeCell, html: true },
+        { label: 'Job ID', value: values.jobId },
+        { label: 'Cover Note', value: values.coverNote },
+        { label: 'Submitted', value: ts },
+      ]),
     });
   }
 

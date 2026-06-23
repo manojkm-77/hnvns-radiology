@@ -2,9 +2,9 @@
 
 import { timingSafeEqual } from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { hasRequiredEnv } from '@/lib/env';
+import { requireDatabase, requireAdminWithDb } from '@/lib/action-guards';
 import { checkRateLimit } from '@/lib/ratelimit';
-import { headers } from 'next/headers';
+import { getClientIpFromHeaders } from '@/lib/ip';
 import {
   setAdminSession,
   verifyAdminSession,
@@ -14,15 +14,6 @@ import {
 // 10 attempts per 15 minutes per IP
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 15 * 60 * 1000;
-
-function getIp(): string {
-  const h = headers();
-  return (
-    h.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    h.get('x-real-ip') ??
-    'unknown'
-  );
-}
 
 /**
  * Constant-time passcode comparison to prevent timing-based discovery.
@@ -53,11 +44,10 @@ function verifyPasscode(passcode: string): boolean {
  * `verifyAdminSession` rather than re-sending the passcode.
  */
 export async function adminLoginAction(passcode: string) {
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
-  const ip = getIp();
+  const ip = getClientIpFromHeaders();
   if (!checkRateLimit(`admin:${ip}`, RATE_LIMIT, RATE_WINDOW_MS)) {
     return { success: false, error: 'Too many attempts. Please wait before trying again.' };
   }
@@ -81,13 +71,8 @@ export async function adminLogoutAction() {
 }
 
 export async function getAdminDataAction() {
-  if (!(await verifyAdminSession())) {
-    return { success: false, error: 'Unauthorized' };
-  }
-
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
-  }
+  const guard = await requireAdminWithDb();
+  if (guard) return guard;
 
   try {
     const jobs = await prisma.job.findMany({
@@ -125,13 +110,8 @@ export async function createJobAction(jobData: {
   requirements: string[];
   benefits: string[];
 }) {
-  if (!(await verifyAdminSession())) {
-    return { success: false, error: 'Unauthorized' };
-  }
-
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured.' };
-  }
+  const guard = await requireAdminWithDb();
+  if (guard) return guard;
 
   try {
     const newJob = await prisma.job.create({
@@ -169,13 +149,8 @@ export async function updateJobAction(jobId: string, jobData: {
   requirements: string[];
   benefits: string[];
 }) {
-  if (!(await verifyAdminSession())) {
-    return { success: false, error: 'Unauthorized' };
-  }
-
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured.' };
-  }
+  const guard = await requireAdminWithDb();
+  if (guard) return guard;
 
   try {
     const updatedJob = await prisma.job.update({
@@ -202,13 +177,8 @@ export async function updateJobAction(jobId: string, jobData: {
 }
 
 export async function deleteJobAction(jobId: string) {
-  if (!(await verifyAdminSession())) {
-    return { success: false, error: 'Unauthorized' };
-  }
-
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured.' };
-  }
+  const guard = await requireAdminWithDb();
+  if (guard) return guard;
 
   try {
     await prisma.job.delete({ where: { id: jobId } });

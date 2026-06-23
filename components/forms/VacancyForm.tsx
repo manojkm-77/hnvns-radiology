@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { submitVacancyAction } from '@/app/actions/vacancy';
+import { FormField, inputClassName, selectClassName } from '@/components/ui/FormField';
+import { FormError } from '@/components/ui/FormError';
+import { SuccessScreen } from '@/components/ui/SuccessScreen';
 
 const initialForm = {
   hospitalName: '',
@@ -98,16 +101,10 @@ export function VacancyForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-[2rem] border border-accent/30 bg-surface p-8 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent text-bg">
-          <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        </div>
-        <h3 className="mt-6 text-2xl font-light tracking-[-0.04em] text-text">Vacancy request received.</h3>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
-          Our hospital partnerships team will review your requirements and follow up shortly.
-        </p>
+      <SuccessScreen
+        title="Vacancy request received."
+        description="Our hospital partnerships team will review your requirements and follow up shortly."
+      >
         {meetingLink && (
           <div className="mt-6 rounded-2xl border border-accent/30 bg-accent/5 p-4">
             <p className="text-sm text-text font-medium">Your onboarding call is ready to book.</p>
@@ -121,7 +118,7 @@ export function VacancyForm() {
             </a>
           </div>
         )}
-      </div>
+      </SuccessScreen>
     );
   }
 
@@ -133,131 +130,102 @@ export function VacancyForm() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        {/* Hospital Name */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Hospital Name</span>
+        <FormField label="Hospital Name" error={errors.hospitalName}>
           <input
             value={values.hospitalName}
             onChange={(e) => update('hospitalName', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.hospitalName ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.hospitalName)}
             placeholder="Apollo Hospitals"
           />
-          {errors.hospitalName && <span className="text-xs text-red-300">{errors.hospitalName}</span>}
-        </label>
+        </FormField>
 
-        {/* Location */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Location</span>
+        <FormField label="Location" error={errors.location}>
           <input
             value={values.location}
             onChange={(e) => update('location', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.location ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.location)}
             placeholder="Bengaluru, Karnataka"
           />
-          {errors.location && <span className="text-xs text-red-300">{errors.location}</span>}
-        </label>
+        </FormField>
 
-        {/* Department */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Department</span>
+        <FormField label="Department" error={errors.department}>
           <input
             value={values.department}
             onChange={(e) => update('department', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.department ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.department)}
             placeholder="Radiology / Imaging"
           />
-          {errors.department && <span className="text-xs text-red-300">{errors.department}</span>}
-        </label>
+        </FormField>
 
-        {/* Role Needed */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Role Needed</span>
+        <FormField label="Role Needed" error={errors.role}>
           <input
             value={values.role}
             onChange={(e) => update('role', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.role ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.role)}
             placeholder="Senior MRI Technologist"
           />
-          {errors.role && <span className="text-xs text-red-300">{errors.role}</span>}
-        </label>
+        </FormField>
 
-        {/* Number of Positions */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Number of Positions</span>
+        <FormField label="Number of Positions" error={errors.positions}>
           <input
             type="number"
             min="1"
             value={values.positions}
             onChange={(e) => update('positions', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.positions ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.positions)}
             placeholder="1"
           />
-          {errors.positions && <span className="text-xs text-red-300">{errors.positions}</span>}
-        </label>
+        </FormField>
 
-        {/* Urgency */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Urgency</span>
+        <FormField label="Urgency" error={errors.urgency}>
           <select
             value={values.urgency}
             onChange={(e) => update('urgency', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.urgency ? 'border-red-400/60' : 'border-border')}
+            className={selectClassName(!!errors.urgency)}
           >
             <option value="">Select urgency</option>
             <option value="Routine">Routine</option>
             <option value="Urgent">Urgent</option>
             <option value="Critical">Critical</option>
           </select>
-          {errors.urgency && <span className="text-xs text-red-300">{errors.urgency}</span>}
-        </label>
+        </FormField>
 
-        {/* Contact Person */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Contact Person</span>
+        <FormField label="Contact Person" error={errors.contactName}>
           <input
             value={values.contactName}
             onChange={(e) => update('contactName', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.contactName ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.contactName)}
             placeholder="Dr. A. Sharma"
           />
-          {errors.contactName && <span className="text-xs text-red-300">{errors.contactName}</span>}
-        </label>
+        </FormField>
 
-        {/* Contact Phone */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Phone</span>
+        <FormField label="Phone" error={errors.contactPhone}>
           <input
             value={values.contactPhone}
             onChange={(e) => update('contactPhone', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.contactPhone ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.contactPhone)}
             placeholder="+91 98765 43210"
           />
-          {errors.contactPhone && <span className="text-xs text-red-300">{errors.contactPhone}</span>}
-        </label>
+        </FormField>
 
-        {/* Contact Email */}
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Email</span>
+        <FormField label="Email" error={errors.contactEmail} colSpan>
           <input
             type="email"
             value={values.contactEmail}
             onChange={(e) => update('contactEmail', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.contactEmail ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.contactEmail)}
             placeholder="hr@hospital.org"
           />
-          {errors.contactEmail && <span className="text-xs text-red-300">{errors.contactEmail}</span>}
-        </label>
+        </FormField>
 
-        {/* Notes */}
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Notes (optional)</span>
+        <FormField label="Notes" hint="(optional)" colSpan>
           <textarea
             value={values.notes}
             onChange={(e) => update('notes', e.target.value)}
             className="min-h-32 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
             placeholder="Shift pattern, modalities, reporting expectations, or any additional requirements"
           />
-        </label>
+        </FormField>
 
         {/* Onboarding Call */}
         <div className="md:col-span-2">
@@ -276,11 +244,7 @@ export function VacancyForm() {
         </div>
       </div>
 
-      {submitError && (
-        <div className="mt-6 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-200">
-          {submitError}
-        </div>
-      )}
+      <FormError message={submitError} />
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <button

@@ -2,7 +2,7 @@
 
 import { randomInt, timingSafeEqual, createHash } from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { hasRequiredEnv } from '@/lib/env';
+import { requireDatabase } from '@/lib/action-guards';
 import { resend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/html';
 import { setDashboardSession, verifyDashboardSession } from '@/lib/auth';
@@ -37,9 +37,8 @@ export async function requestOtpAction(email: string): Promise<OtpRequestResult>
     return { success: false, error: 'Enter a valid email address.' };
   }
 
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
   // Cryptographically random 6-digit code
   const code = String(randomInt(100000, 999999));
@@ -94,9 +93,8 @@ export async function verifyOtpAction(email: string, code: string): Promise<OtpV
   const normalized = normalizeEmail(email);
   const trimmedCode = code.trim();
 
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
   if (!trimmedCode) {
     return { success: false, error: 'Enter the code we sent to your email.' };
@@ -148,9 +146,8 @@ export async function getCandidateApplicationsAction() {
     return { success: false as const, error: 'Session expired' };
   }
 
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false as const, error: 'Database is not configured.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
   try {
     const applications = await prisma.candidateApplication.findMany({
@@ -200,9 +197,8 @@ export async function getHospitalVacanciesAction() {
     return { success: false as const, error: 'Session expired' };
   }
 
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false as const, error: 'Database is not configured.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
   try {
     const vacancies = await prisma.vacancyRequest.findMany({
