@@ -78,3 +78,14 @@ model InsightPost {
   category    String
   publishedAt DateTime @default(now())
 }
+
+model OtpToken {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, used, expiresAt])
+}

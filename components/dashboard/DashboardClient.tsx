@@ -5,11 +5,14 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import {
+  requestOtpAction,
+  verifyOtpAction,
   getCandidateApplicationsAction,
   getHospitalVacanciesAction,
 } from '@/app/actions/dashboard';
 
 type Role = 'candidate' | 'hospital';
+type Step = 'email' | 'otp' | 'role' | 'data';
 
 type CandidateRow = {
   id: string;
@@ -39,17 +42,21 @@ function formatDate(d: Date | string) {
 }
 
 export function DashboardClient({ email: initialEmail, firstName }: { email: string; firstName: string | null }) {
-  const [step, setStep] = useState<'email' | 'role' | 'data'>('email');
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState(initialEmail);
   const [emailInput, setEmailInput] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [otpInput, setOtpInput] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [role, setRole] = useState<Role | null>(null);
   const [candidateRows, setCandidateRows] = useState<CandidateRow[]>([]);
   const [hospitalRows, setHospitalRows] = useState<HospitalRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const val = emailInput.trim();
     if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
@@ -57,26 +64,64 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
       return;
     }
     setEmail(val);
-    setStep('role');
+    setIsSendingOtp(true);
+    setEmailError('');
+    try {
+      const res = await requestOtpAction(val);
+      if (res.success) {
+        setStep('otp');
+      } else {
+        setEmailError(res.error ?? 'Could not send a login code.');
+      }
+    } catch (err) {
+      setEmailError('An error occurred. Please try again.');
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
-  const loadData = async (selectedRole: Role, resolvedEmail: string) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = otpInput.trim();
+    if (!/^\d{6}$/.test(code)) {
+      setOtpError('Enter the 6-digit code we sent to your email.');
+      return;
+    }
+    setIsVerifyingOtp(true);
+    setOtpError('');
+    try {
+      const res = await verifyOtpAction(email, code);
+      if (res.success) {
+        setStep('role');
+      } else {
+        setOtpError(res.error ?? 'Invalid or expired code.');
+      }
+    } catch (err) {
+      setOtpError('An error occurred. Please try again.');
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const loadData = async (selectedRole: Role) => {
     setLoading(true);
     setError('');
 
     if (selectedRole === 'candidate') {
-      const res = await getCandidateApplicationsAction(resolvedEmail);
+      const res = await getCandidateApplicationsAction();
       if (res.success) {
         setCandidateRows(res.data as CandidateRow[]);
       } else {
         setError(res.error ?? 'Failed to load data.');
+        if (res.error === 'Session expired') { setStep('email'); return; }
       }
     } else {
-      const res = await getHospitalVacanciesAction(resolvedEmail);
+      const res = await getHospitalVacanciesAction();
       if (res.success) {
         setHospitalRows(res.data as HospitalRow[]);
       } else {
         setError(res.error ?? 'Failed to load data.');
+        if (res.error === 'Session expired') { setStep('email'); return; }
       }
     }
 
@@ -86,7 +131,7 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
 
   const selectRole = (r: Role) => {
     setRole(r);
-    loadData(r, email);
+    loadData(r);
   };
 
   // Step 1: collect email
@@ -112,16 +157,66 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
               className="h-12 rounded-2xl border border-border bg-surface px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
               placeholder="name@example.com"
               autoFocus
+              disabled={isSendingOtp}
             />
             {emailError && <span className="text-xs text-red-300">{emailError}</span>}
           </div>
           <button
             type="submit"
-            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-bg hover:bg-accent/90 transition-colors"
+            disabled={isSendingOtp}
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-bg hover:bg-accent/90 transition-colors disabled:opacity-70"
           >
-            Look up my activity →
+            {isSendingOtp ? 'Sending code…' : 'Send login code →'}
           </button>
         </form>
+      </div>
+    );
+  }
+
+  // Step 2: enter OTP
+  if (step === 'otp') {
+    return (
+      <div className="mx-auto max-w-md pt-16">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">Dashboard</p>
+        <h1 className="mt-3 text-3xl font-light tracking-[-0.04em] text-text md:text-4xl">
+          Check your inbox.
+        </h1>
+        <p className="mt-2 text-sm text-muted">
+          We sent a 6-digit code to <span className="text-text">{email}</span>. It expires in 10 minutes.
+        </p>
+
+        <form onSubmit={handleOtpSubmit} className="mt-8 space-y-4">
+          <div className="grid gap-2">
+            <label htmlFor="dash-otp" className="text-sm text-muted">Login code</label>
+            <input
+              id="dash-otp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={otpInput}
+              onChange={(e) => { setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6)); setOtpError(''); }}
+              className="h-12 rounded-2xl border border-border bg-surface px-4 text-center text-lg tracking-[0.5em] text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
+              placeholder="······"
+              autoFocus
+              disabled={isVerifyingOtp}
+            />
+            {otpError && <span className="text-xs text-red-300">{otpError}</span>}
+          </div>
+          <button
+            type="submit"
+            disabled={isVerifyingOtp}
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold text-bg hover:bg-accent/90 transition-colors disabled:opacity-70"
+          >
+            {isVerifyingOtp ? 'Verifying…' : 'Verify code →'}
+          </button>
+        </form>
+
+        <button
+          onClick={() => { setStep('email'); setEmail(''); setEmailInput(''); setOtpInput(''); setOtpError(''); }}
+          className="mt-8 text-xs text-muted hover:text-text transition-colors"
+        >
+          ← Use a different email
+        </button>
       </div>
     );
   }

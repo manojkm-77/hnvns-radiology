@@ -65,8 +65,7 @@ export function HeroSection() {
                 {[
                   ['Senior MRI Technologist · Manipal Hospitals, Whitefield', 'Urgent', 'AI match 94%'],
                   ['CT Radiographer · Aster CMI Hospital, Bengaluru', 'New', 'AI match 91%'],
-                  ['Reporting Specialist · Narayana Health City, Bengaluru', 'Open', 'AI match 88%'],
-                  ['Sonographer · Sakra Premium Referral Hospital', 'Open', 'AI match 86%']
+                  ['Reporting Specialist · Narayana Health City, Bengaluru', 'Open', 'AI match 88%']
                 ].map((item, index) => (
                   <div key={item[0]} className="rounded-2xl border border-border bg-surface p-4">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between sm:gap-4">
@@ -89,7 +88,7 @@ export function HeroSection() {
               </div>
 
               <p className="mt-4 text-xs text-muted text-center italic">
-                Representative roles. Active vacancies are shared directly with registered hospitals and candidates.
+                Representative roles. Active vacancies shared directly with registered hospitals.
               </p>
 
               <div className="mt-6 grid grid-cols-3 gap-3">

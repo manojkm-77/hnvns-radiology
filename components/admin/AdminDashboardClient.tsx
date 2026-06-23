@@ -8,7 +8,9 @@ import {
   getAdminDataAction,
   createJobAction,
   updateJobAction,
-  deleteJobAction
+  deleteJobAction,
+  adminLoginAction,
+  adminLogoutAction
 } from '@/app/actions/admin';
 
 type JobType = {
@@ -89,11 +91,12 @@ export function AdminDashboardClient() {
   const [isSubmittingJob, setIsSubmittingJob] = useState(false);
   const [formError, setFormError] = useState('');
 
-  // Persist session locally
+  // Persist session locally — store only an authenticated flag, never the passcode
   useEffect(() => {
-    const savedCode = sessionStorage.getItem('hnvns_admin_code');
-    if (savedCode) {
-      handleLogin(savedCode);
+    const isAuthed = sessionStorage.getItem('hnvns_admin_authed');
+    if (isAuthed === '1') {
+      // Re-prompt: we don't persist the passcode, so require it again on refresh
+      sessionStorage.removeItem('hnvns_admin_authed');
     }
   }, []);
 
@@ -107,16 +110,24 @@ export function AdminDashboardClient() {
     setIsLoggingIn(true);
     setLoginError('');
     try {
-      const res = await getAdminDataAction(codeToTry);
-      if (res.success && res.data) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem('hnvns_admin_code', codeToTry);
-        setJobs(res.data.jobs as any);
-        setCandidates(res.data.candidates as any);
-        setRequests(res.data.vacancyRequests as any);
+      const loginRes = await adminLoginAction(codeToTry);
+      if (loginRes.success) {
+        // Session cookie is now set — fetch the data without re-sending the passcode
+        const res = await getAdminDataAction();
+        if (res.success && res.data) {
+          setIsAuthenticated(true);
+          // Never store the passcode — store only a session flag
+          sessionStorage.setItem('hnvns_admin_authed', '1');
+          setJobs(res.data.jobs as any);
+          setCandidates(res.data.candidates as any);
+          setRequests(res.data.vacancyRequests as any);
+        } else {
+          setLoginError(res.error || 'Authentication failed.');
+          sessionStorage.removeItem('hnvns_admin_authed');
+        }
       } else {
-        setLoginError(res.error || 'Authentication failed.');
-        sessionStorage.removeItem('hnvns_admin_code');
+        setLoginError(loginRes.error || 'Authentication failed.');
+        sessionStorage.removeItem('hnvns_admin_authed');
       }
     } catch (err) {
       setLoginError('An error occurred during authentication.');
@@ -126,16 +137,19 @@ export function AdminDashboardClient() {
   };
 
   const refreshData = async () => {
-    const code = sessionStorage.getItem('hnvns_admin_code') || passcode;
-    if (!code) return;
     setIsLoadingData(true);
     setDataError('');
     try {
-      const res = await getAdminDataAction(code);
+      const res = await getAdminDataAction();
       if (res.success && res.data) {
         setJobs(res.data.jobs as any);
         setCandidates(res.data.candidates as any);
         setRequests(res.data.vacancyRequests as any);
+      } else if (res.error === 'Unauthorized') {
+        // Session expired / invalid — force re-authentication
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('hnvns_admin_authed');
+        setDataError('Your session has expired. Please sign in again.');
       } else {
         setDataError(res.error || 'Failed to refresh data.');
       }
@@ -146,10 +160,15 @@ export function AdminDashboardClient() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await adminLogoutAction();
+    } catch {
+      // Non-fatal — clear local state regardless
+    }
     setIsAuthenticated(false);
     setPasscode('');
-    sessionStorage.removeItem('hnvns_admin_code');
+    sessionStorage.removeItem('hnvns_admin_authed');
   };
 
   // Job Submission Handler
@@ -161,9 +180,6 @@ export function AdminDashboardClient() {
       setFormError('Please fill out all required fields.');
       return;
     }
-
-    const code = sessionStorage.getItem('hnvns_admin_code') || passcode;
-    setIsSubmittingJob(true);
 
     const formattedData = {
       title: jobForm.title,
@@ -182,9 +198,9 @@ export function AdminDashboardClient() {
     try {
       let res;
       if (isEditModalOpen && editingJobId) {
-        res = await updateJobAction(code, editingJobId, formattedData);
+        res = await updateJobAction(editingJobId, formattedData);
       } else {
-        res = await createJobAction(code, formattedData);
+        res = await createJobAction(formattedData);
       }
 
       if (res.success) {
@@ -193,6 +209,10 @@ export function AdminDashboardClient() {
         setJobForm(initialJobForm);
         setEditingJobId(null);
         refreshData();
+      } else if (res.error === 'Unauthorized') {
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('hnvns_admin_authed');
+        setFormError('Your session has expired. Please sign in again.');
       } else {
         setFormError(res.error || 'Failed to submit job.');
       }
@@ -223,11 +243,14 @@ export function AdminDashboardClient() {
 
   const handleDeleteClick = async (jobId: string) => {
     if (!confirm('Are you sure you want to delete this job posting?')) return;
-    const code = sessionStorage.getItem('hnvns_admin_code') || passcode;
     try {
-      const res = await deleteJobAction(code, jobId);
+      const res = await deleteJobAction(jobId);
       if (res.success) {
         refreshData();
+      } else if (res.error === 'Unauthorized') {
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('hnvns_admin_authed');
+        alert('Your session has expired. Please sign in again.');
       } else {
         alert(res.error || 'Failed to delete job.');
       }

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
+import { escapeHtml } from '@/lib/html';
 
 export type CandidateInput = {
   fullName: string;
@@ -74,27 +75,32 @@ export async function registerCandidateAction(values: CandidateInput): Promise<
     ]);
   }
 
-  // 3. Gmail notification to admin
+  // 3. Gmail notification to admin — all user values HTML-escaped
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail) {
+    const e = escapeHtml;
+    const resumeCell = values.resumeUrl
+      ? `<a href="${e(values.resumeUrl)}">Download Resume</a>`
+      : '—';
+
     await sendMail({
       to: adminEmail,
       subject: `New Candidate – ${values.fullName} – ${values.specialization} – ${values.availability}`,
       html: `
         <h2 style="font-family:sans-serif">New Candidate Application</h2>
         <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${values.fullName}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${values.email}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${values.phone}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${values.location}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.fullName)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.email)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.phone)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
           <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Experience</td><td style="padding:8px;border:1px solid #ddd">${values.experienceYears} year(s)</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${values.specialization}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${values.currentEmployer ?? '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${values.salaryRange}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${values.availability}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${values.resumeUrl ? `<a href="${values.resumeUrl}">Download Resume</a>` : '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${values.jobId ?? '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${values.coverNote ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Specialization</td><td style="padding:8px;border:1px solid #ddd">${e(values.specialization)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Current Employer</td><td style="padding:8px;border:1px solid #ddd">${e(values.currentEmployer) || '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Expected Salary</td><td style="padding:8px;border:1px solid #ddd">${e(values.salaryRange)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Availability</td><td style="padding:8px;border:1px solid #ddd">${e(values.availability)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Resume</td><td style="padding:8px;border:1px solid #ddd">${resumeCell}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Job ID</td><td style="padding:8px;border:1px solid #ddd">${e(values.jobId) || '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Cover Note</td><td style="padding:8px;border:1px solid #ddd">${e(values.coverNote) || '—'}</td></tr>
           <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
         </table>
       `,

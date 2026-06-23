@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { navLinks } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { AnnouncementBanner } from './AnnouncementBanner';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -32,7 +31,6 @@ export function Navigation() {
         scrolled && 'border-b border-[#222] bg-[#111111] backdrop-blur-md'
       )}
     >
-      <AnnouncementBanner />
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 md:px-8" aria-label="Primary navigation">
         <Link href="/" className="group flex items-center gap-3" aria-label="HNVNS home">
           <span className="grid h-9 w-9 place-items-center rounded-full border border-accent/30 bg-accent/10 text-accent transition-colors group-hover:bg-accent/15">

@@ -129,42 +129,42 @@ export const specializations = [
   {
     tag: 'Priority',
     title: 'Neuro Imaging',
-    description: 'Neuroimaging specialists and clinicians for head, spine, and neurovascular roles. 38 open roles.'
+    description: 'Neuroimaging specialists and clinicians for head, spine, and neurovascular roles. Actively placing.'
   },
   {
     tag: 'Featured',
     title: 'Chest Imaging',
-    description: 'Thoracic CT and X-ray roles across clinical teams and hospital networks. 52 open roles.'
+    description: 'Thoracic CT and X-ray roles across clinical teams and hospital networks. Actively placing.'
   },
   {
     tag: 'New',
     title: 'MSK Imaging',
-    description: 'Musculoskeletal specialists for sports medicine, injury, and movement disorder roles. 24 open roles.'
+    description: 'Musculoskeletal specialists for sports medicine, injury, and movement disorder roles. Actively placing.'
   },
   {
     tag: 'Teal',
     title: 'Body Imaging',
-    description: 'Abdominal and pelvic imaging roles for multi-organ diagnostic pathways. 19 open roles.'
+    description: 'Abdominal and pelvic imaging roles for multi-organ diagnostic pathways. Actively placing.'
   },
   {
     tag: 'Urgent',
     title: 'Emergency Coverage',
-    description: 'On-call and urgent-triage specialists for emergency and trauma department coverage. 31 open roles.'
+    description: 'On-call and urgent-triage specialists for emergency and trauma department coverage. Actively placing.'
   },
   {
     tag: 'Featured',
     title: "Women's Health Imaging",
-    description: 'Breast, pelvic, and obstetric specialists with carefully vetted credentials. 27 open roles.'
+    description: 'Breast, pelvic, and obstetric specialists with carefully vetted credentials. Actively placing.'
   },
   {
     tag: 'New',
     title: 'Pediatric Imaging',
-    description: 'Age-aware clinical imaging professionals for pediatric care and trauma support. 14 open roles.'
+    description: 'Age-aware clinical imaging professionals for pediatric care and trauma support. Actively placing.'
   },
   {
     tag: 'Teal',
     title: 'AI Validation',
-    description: 'Clinical reviewers and technologists for model evaluation, annotation review, and AI QA programs. 17 open roles.'
+    description: 'Clinical reviewers and technologists for model evaluation, annotation review, and AI QA programs. Actively placing.'
   }
 ];
 
@@ -252,23 +252,6 @@ export const steps = [
   }
 ];
 
-export const testimonials = [
-  {
-    quote: 'HNVNS filled our MRI team gap in under 36 hours. The candidates were pre-verified and the platform made the entire HR process completely painless.',
-    name: 'Dr. Meera Raman',
-    role: 'Chief Staffing Officer, Metro Imaging Network'
-  },
-  {
-    quote: 'Staffing gaps in imaging used to cost us days of back-and-forth. HNVNS cut that to hours with AI shortlisting that was genuinely accurate.',
-    name: 'Arun Patel',
-    role: 'Operations Director, Northstar Hospitals'
-  },
-  {
-    quote: 'I registered on Monday, had three relevant interview requests by Wednesday, and accepted an offer by Friday. The pay transparency made HNVNS worth it.',
-    name: 'Dr. Lena Ortiz',
-    role: 'Technologist, placed via HNVNS'
-  }
-];
 
 export const insights = [
   {

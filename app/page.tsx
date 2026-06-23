@@ -6,7 +6,7 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { SpecializationsSection } from '@/components/sections/SpecializationsSection';
 import { TrustStrip } from '@/components/sections/TrustStrip';
-import { TestimonialsSection } from '@/components/sections/TestimonialsSection';
+import { EarlyAccessSection } from '@/components/sections/EarlyAccessSection';
 import { TickerStrip } from '@/components/sections/TickerStrip';
 import { TrustBadgesSection } from '@/components/sections/TrustBadgesSection';
 import { ValuePropSection } from '@/components/sections/ValuePropSection';
@@ -29,7 +29,7 @@ export default function HomePage() {
       <TrustStrip />
       <HowItWorksSection />
       <SpecializationsSection />
-      <TestimonialsSection />
+      <EarlyAccessSection />
       <TrustBadgesSection />
       <AboutSplitSection />
       <BlogPreviewSection />

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { registerCandidateAction } from '@/app/actions/candidate';
+import { getUploadTokenAction } from '@/app/actions/upload';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type CandidateRegistrationFormProps = {
@@ -207,11 +208,20 @@ export function CandidateRegistrationForm({ lang = 'en' }: CandidateRegistration
     try {
       let resumeUrl = '';
       if (values.cv) {
+        const uploadToken = await getUploadTokenAction();
+        if (!uploadToken) throw new Error('Uploads are not configured. Please try again later.');
         const uploadResponse = await fetch(`/api/upload?filename=${encodeURIComponent(values.cv.name)}`, {
           method: 'POST',
           body: values.cv,
+          headers: {
+            'X-Upload-Token': uploadToken,
+            'Content-Type': 'application/pdf',
+          },
         });
-        if (!uploadResponse.ok) throw new Error('CV upload failed. Please try again.');
+        if (!uploadResponse.ok) {
+          const errBody = await uploadResponse.json().catch(() => ({}));
+          throw new Error(errBody.error || 'CV upload failed. Please try again.');
+        }
         const uploadData = await uploadResponse.json();
         resumeUrl = uploadData.url;
       }

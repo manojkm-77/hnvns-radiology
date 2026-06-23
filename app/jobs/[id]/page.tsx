@@ -94,30 +94,40 @@ export default async function JobDetailPage({ params }: Props) {
     notFound();
   }
 
-  // Pre-generate some mock content for a rich, wow-factor user experience
-  const responsibilities = [
-    `Perform high-quality ${job.specialization} procedures and diagnostic imaging studies according to established protocols.`,
-    'Ensure patient comfort, safety, and clear communication throughout the imaging process.',
-    'Collaborate closely with radiologists and clinical teams to optimize protocols and ensure diagnostic precision.',
-    'Maintain and QA diagnostic equipment, reporting any technical issues promptly.',
-    'Document procedure details accurately in the PACS and electronic health records (EHR).',
-  ];
+  // Use stored DB fields, fall back to generated content only when fields are empty
+  const hasResponsibilities = 'responsibilities' in job && Array.isArray((job as any).responsibilities) && (job as any).responsibilities.length > 0;
+  const hasRequirements = 'requirements' in job && Array.isArray((job as any).requirements) && (job as any).requirements.length > 0;
+  const hasBenefits = 'benefits' in job && Array.isArray((job as any).benefits) && (job as any).benefits.length > 0;
 
-  const requirements = [
-    `Registered Radiologic Technologist with active credentials/licensure in ${job.location} or equivalent state board.`,
-    `Minimum 2 years of clinical experience in ${job.specialization} imaging.`,
-    'Strong knowledge of radiation safety, patient positioning, and anatomy.',
-    'Proficiency with modern PACS systems and advanced post-processing workstations.',
-    'Excellent patient care, communication, and team collaboration skills.',
-  ];
+  const responsibilities = hasResponsibilities
+    ? (job as any).responsibilities as string[]
+    : [
+        `Perform high-quality ${job.specialization} procedures and diagnostic imaging studies according to established protocols.`,
+        'Ensure patient comfort, safety, and clear communication throughout the imaging process.',
+        'Collaborate closely with radiologists and clinical teams to optimize protocols and ensure diagnostic precision.',
+        'Maintain and QA diagnostic equipment, reporting any technical issues promptly.',
+        'Document procedure details accurately in the PACS and electronic health records (EHR).',
+      ];
 
-  const benefits = [
-    `Competitive compensation package (${job.salary}) with shift differential pay.`,
-    'Comprehensive healthcare, dental, and vision insurance options.',
-    'Continuing education and professional development support.',
-    'State-of-the-art diagnostic facilities and cutting-edge equipment.',
-    'Flexible scheduling and generous paid time off.',
-  ];
+  const requirements = hasRequirements
+    ? (job as any).requirements as string[]
+    : [
+        `Registered Radiologic Technologist with active credentials/licensure in ${job.location} or equivalent state board.`,
+        `Minimum 2 years of clinical experience in ${job.specialization} imaging.`,
+        'Strong knowledge of radiation safety, patient positioning, and anatomy.',
+        'Proficiency with modern PACS systems and advanced post-processing workstations.',
+        'Excellent patient care, communication, and team collaboration skills.',
+      ];
+
+  const benefits = hasBenefits
+    ? (job as any).benefits as string[]
+    : [
+        `Competitive compensation package (${job.salary}) with shift differential pay.`,
+        'Comprehensive healthcare, dental, and vision insurance options.',
+        'Continuing education and professional development support.',
+        'State-of-the-art diagnostic facilities and cutting-edge equipment.',
+        'Flexible scheduling and generous paid time off.',
+      ];
 
   const statusLabels = {
     featured: 'Featured',

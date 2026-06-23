@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
+import { escapeHtml } from '@/lib/html';
 
 export type VacancyInput = {
   hospitalName: string;
@@ -71,25 +72,26 @@ export async function submitVacancyAction(values: VacancyInput): Promise<
     ]);
   }
 
-  // 3. Gmail notification to admin
+  // 3. Gmail notification to admin — all user values HTML-escaped
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail) {
+    const e = escapeHtml;
     await sendMail({
       to: adminEmail,
       subject: `New Vacancy – ${values.hospitalName} – ${values.role} – ${values.urgency}`,
       html: `
         <h2 style="font-family:sans-serif">New Vacancy Submission</h2>
         <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Hospital</td><td style="padding:8px;border:1px solid #ddd">${values.hospitalName}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${values.location}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Department</td><td style="padding:8px;border:1px solid #ddd">${values.department}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Role Needed</td><td style="padding:8px;border:1px solid #ddd">${values.role}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Hospital</td><td style="padding:8px;border:1px solid #ddd">${e(values.hospitalName)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Department</td><td style="padding:8px;border:1px solid #ddd">${e(values.department)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Role Needed</td><td style="padding:8px;border:1px solid #ddd">${e(values.role)}</td></tr>
           <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Positions</td><td style="padding:8px;border:1px solid #ddd">${values.positions}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Urgency</td><td style="padding:8px;border:1px solid #ddd">${values.urgency}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Name</td><td style="padding:8px;border:1px solid #ddd">${values.contactName}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Phone</td><td style="padding:8px;border:1px solid #ddd">${values.contactPhone}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Email</td><td style="padding:8px;border:1px solid #ddd">${values.contactEmail}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Notes</td><td style="padding:8px;border:1px solid #ddd">${values.notes ?? '—'}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Urgency</td><td style="padding:8px;border:1px solid #ddd">${e(values.urgency)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactName)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactPhone)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactEmail)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Notes</td><td style="padding:8px;border:1px solid #ddd">${e(values.notes) || '—'}</td></tr>
           <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Onboarding Call</td><td style="padding:8px;border:1px solid #ddd">${values.onboardingCall ? 'Yes' : 'No'}</td></tr>
           <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
         </table>
