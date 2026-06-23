@@ -1,7 +1,8 @@
 import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { hasRequiredEnv } from '@/lib/env';
-import { randomUUID } from 'crypto';
+import { randomUUID, timingSafeEqual } from 'crypto';
+import { jwtVerify } from 'jose';
 import { checkRateLimit } from '@/lib/ratelimit';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -22,17 +23,49 @@ function getClientIp(request: Request): string {
   return request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-export async function POST(request: Request): Promise<NextResponse> {
-  // --- Lightweight auth: require a static upload token ---
+/**
+ * Verifies the upload token. Accepts either:
+ * 1. A short-lived JWT nonce (issued by `getUploadTokenAction`)
+ * 2. The static UPLOAD_TOKEN (legacy, timing-safe comparison)
+ */
+async function verifyUploadAuth(provided: string): Promise<boolean> {
+  const secret = process.env.UPLOAD_TOKEN ?? process.env.ADMIN_JWT_SECRET ?? process.env.ADMIN_PASSCODE;
+  if (!secret) return false;
+
+  // Try JWT nonce first
+  try {
+    const { payload } = await jwtVerify(
+      provided,
+      new TextEncoder().encode(secret),
+    );
+    if (payload.purpose === 'upload') return true;
+  } catch {
+    // Not a valid JWT — fall through to static comparison
+  }
+
+  // Legacy: timing-safe comparison against the static UPLOAD_TOKEN
   const uploadToken = process.env.UPLOAD_TOKEN;
-  if (!uploadToken) {
+  if (!uploadToken) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(uploadToken);
+  if (a.length !== b.length) {
+    timingSafeEqual(b, b);
+    return false;
+  }
+  return timingSafeEqual(a, b);
+}
+
+export async function POST(request: Request): Promise<NextResponse> {
+  // --- Auth: verify upload nonce or static token ---
+  const secret = process.env.UPLOAD_TOKEN ?? process.env.ADMIN_JWT_SECRET ?? process.env.ADMIN_PASSCODE;
+  if (!secret) {
     return NextResponse.json(
       { error: 'Uploads are not configured. Set UPLOAD_TOKEN in the environment.' },
       { status: 500 }
     );
   }
   const providedToken = request.headers.get('x-upload-token');
-  if (!providedToken || providedToken !== uploadToken) {
+  if (!providedToken || !(await verifyUploadAuth(providedToken))) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 

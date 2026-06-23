@@ -4,6 +4,21 @@ import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
 import { resend } from '@/lib/resend';
 import { escapeHtml } from '@/lib/html';
+import { checkRateLimit } from '@/lib/ratelimit';
+import { headers } from 'next/headers';
+
+// 5 contact submissions per 15 minutes per IP
+const CONTACT_RATE_LIMIT = 5;
+const CONTACT_RATE_WINDOW_MS = 15 * 60 * 1000;
+
+function getIp(): string {
+  const h = headers();
+  return (
+    h.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    h.get('x-real-ip') ??
+    'unknown'
+  );
+}
 
 type ContactInput = {
   name: string;
@@ -14,6 +29,10 @@ type ContactInput = {
 };
 
 export async function submitContactAction(values: ContactInput) {
+  const ip = getIp();
+  if (!checkRateLimit(`contact:${ip}`, CONTACT_RATE_LIMIT, CONTACT_RATE_WINDOW_MS)) {
+    return { success: false, error: 'Too many submissions. Please wait before trying again.' };
+  }
   // 1. Persist to DB if available
   if (hasRequiredEnv('DATABASE_URL')) {
     try {

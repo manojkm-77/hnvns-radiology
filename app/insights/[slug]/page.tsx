@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { hasRequiredEnv } from '@/lib/env';
+import { escapeHtml } from '@/lib/html';
 import { RevealSection } from '@/components/animations/RevealSection';
 
 // Static fallback articles — used when DB is unavailable or article is not in DB yet
@@ -175,15 +176,19 @@ export default async function InsightDetailPage({ params }: Props) {
               // Headings: lines starting with **text** alone on a line
               const headingMatch = para.match(/^\*\*(.+)\*\*$/);
               if (headingMatch) {
+                const headingText = escapeHtml(headingMatch[1]);
                 return (
-                  <h2 key={i} className="text-xl font-medium tracking-[-0.03em] text-text pt-4">
-                    {headingMatch[1]}
-                  </h2>
+                  <h2
+                    key={i}
+                    className="text-xl font-medium tracking-[-0.03em] text-text pt-4"
+                    dangerouslySetInnerHTML={{ __html: headingText }}
+                  />
                 );
               }
 
-              // Regular paragraph — inline bold rendering
-              const rendered = para.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+              // Regular paragraph — escape first, then apply inline bold
+              const safe = escapeHtml(para);
+              const rendered = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
               return (
                 <p
                   key={i}
