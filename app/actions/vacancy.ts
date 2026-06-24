@@ -1,10 +1,10 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { hasRequiredEnv } from '@/lib/env';
+import { requireDatabase } from '@/lib/action-guards';
 import { sendMail } from '@/lib/gmail';
 import { appendRow } from '@/lib/sheets';
-import { escapeHtml } from '@/lib/html';
+import { buildEmailTable } from '@/lib/email-template';
 
 export type VacancyInput = {
   hospitalName: string;
@@ -24,11 +24,9 @@ export async function submitVacancyAction(values: VacancyInput): Promise<
   | { success: true; onboardingCall: boolean; meetingLink: string | null }
   | { success: false; error: string }
 > {
-  if (!hasRequiredEnv('DATABASE_URL')) {
-    return { success: false, error: 'Database is not configured. Please add DATABASE_URL.' };
-  }
+  const dbCheck = requireDatabase();
+  if (dbCheck) return dbCheck;
 
-  // 1. Save to DB
   try {
     await prisma.vacancyRequest.create({
       data: {
@@ -53,7 +51,6 @@ export async function submitVacancyAction(values: VacancyInput): Promise<
 
   const ts = new Date().toISOString();
 
-  // 2. Append to Google Sheet (fire-and-forget, non-fatal)
   const sheetId = process.env.GOOGLE_SHEET_ID;
   if (sheetId) {
     await appendRow(sheetId, [
@@ -72,30 +69,25 @@ export async function submitVacancyAction(values: VacancyInput): Promise<
     ]);
   }
 
-  // 3. Gmail notification to admin — all user values HTML-escaped
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail) {
-    const e = escapeHtml;
     await sendMail({
       to: adminEmail,
       subject: `New Vacancy – ${values.hospitalName} – ${values.role} – ${values.urgency}`,
-      html: `
-        <h2 style="font-family:sans-serif">New Vacancy Submission</h2>
-        <table style="font-family:sans-serif;border-collapse:collapse;width:100%">
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Hospital</td><td style="padding:8px;border:1px solid #ddd">${e(values.hospitalName)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Location</td><td style="padding:8px;border:1px solid #ddd">${e(values.location)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Department</td><td style="padding:8px;border:1px solid #ddd">${e(values.department)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Role Needed</td><td style="padding:8px;border:1px solid #ddd">${e(values.role)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Positions</td><td style="padding:8px;border:1px solid #ddd">${values.positions}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Urgency</td><td style="padding:8px;border:1px solid #ddd">${e(values.urgency)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Name</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactName)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Phone</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactPhone)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Contact Email</td><td style="padding:8px;border:1px solid #ddd">${e(values.contactEmail)}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Notes</td><td style="padding:8px;border:1px solid #ddd">${e(values.notes) || '—'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Onboarding Call</td><td style="padding:8px;border:1px solid #ddd">${values.onboardingCall ? 'Yes' : 'No'}</td></tr>
-          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Submitted</td><td style="padding:8px;border:1px solid #ddd">${ts}</td></tr>
-        </table>
-      `,
+      html: buildEmailTable('New Vacancy Submission', [
+        { label: 'Hospital', value: values.hospitalName },
+        { label: 'Location', value: values.location },
+        { label: 'Department', value: values.department },
+        { label: 'Role Needed', value: values.role },
+        { label: 'Positions', value: values.positions },
+        { label: 'Urgency', value: values.urgency },
+        { label: 'Contact Name', value: values.contactName },
+        { label: 'Contact Phone', value: values.contactPhone },
+        { label: 'Contact Email', value: values.contactEmail },
+        { label: 'Notes', value: values.notes },
+        { label: 'Onboarding Call', value: values.onboardingCall ? 'Yes' : 'No' },
+        { label: 'Submitted', value: ts },
+      ]),
     });
   }
 

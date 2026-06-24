@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import { submitContactAction } from '@/app/actions/contact';
+import { FormField, inputClassName } from '@/components/ui/FormField';
+import { FormError } from '@/components/ui/FormError';
+import { SuccessScreen } from '@/components/ui/SuccessScreen';
 
 const initialForm = {
   name: '',
@@ -70,25 +73,18 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-[2rem] border border-accent/30 bg-surface p-8 text-center min-h-[400px] flex flex-col justify-center items-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent text-bg">
-          <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        </div>
-        <h3 className="mt-6 text-2xl font-light tracking-[-0.04em] text-text">Inquiry received.</h3>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
-          Thank you for reaching out. A staffing coordinator will review your inquiry and follow up shortly.
-        </p>
-      </div>
+      <SuccessScreen
+        title="Inquiry received."
+        description="Thank you for reaching out. A staffing coordinator will review your inquiry and follow up shortly."
+        className="min-h-[400px] flex flex-col justify-center items-center"
+      />
     );
   }
 
   return (
     <form onSubmit={handleSubmit} noValidate className="rounded-[2rem] border border-border bg-surface p-8">
       <div className="grid gap-5 md:grid-cols-2">
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Name</span>
+        <FormField label="Name" error={errors.name}>
           <input
             name="name"
             value={values.name}
@@ -99,10 +95,8 @@ export function ContactForm() {
             )}
             placeholder="Dr. A. Sharma"
           />
-          {errors.name && <span className="text-xs text-red-300">{errors.name}</span>}
-        </label>
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">Email</span>
+        </FormField>
+        <FormField label="Email" error={errors.email}>
           <input
             name="email"
             value={values.email}
@@ -114,10 +108,8 @@ export function ContactForm() {
             placeholder="name@hospital.org"
             type="email"
           />
-          {errors.email && <span className="text-xs text-red-300">{errors.email}</span>}
-        </label>
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Organization</span>
+        </FormField>
+        <FormField label="Organization" error={errors.organization} colSpan>
           <input
             name="organization"
             value={values.organization}
@@ -128,10 +120,8 @@ export function ContactForm() {
             )}
             placeholder="Hospital, clinic, or research group"
           />
-          {errors.organization && <span className="text-xs text-red-300">{errors.organization}</span>}
-        </label>
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Staffing focus</span>
+        </FormField>
+        <FormField label="Staffing focus" colSpan>
           <select
             name="staffingFocus"
             value={values.staffingFocus}
@@ -143,9 +133,8 @@ export function ContactForm() {
             <option value="Candidate sourcing">Candidate sourcing</option>
             <option value="Clinical coverage">Clinical coverage</option>
           </select>
-        </label>
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">Message</span>
+        </FormField>
+        <FormField label="Message" error={errors.message} colSpan>
           <textarea
             name="message"
             value={values.message}
@@ -156,15 +145,10 @@ export function ContactForm() {
             )}
             placeholder="Tell us about your hiring volume, role gaps, and timeline."
           />
-          {errors.message && <span className="text-xs text-red-300">{errors.message}</span>}
-        </label>
+        </FormField>
       </div>
 
-      {submitError && (
-        <div className="mt-6 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-200">
-          {submitError}
-        </div>
-      )}
+      <FormError message={submitError} />
 
       <div className="mt-7 flex flex-col gap-3 sm:flex-row">
         <button

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { formatDate } from '@/lib/format';
+import { urgencyBadgeVariant } from '@/lib/urgency';
 import {
   requestOtpAction,
   verifyOtpAction,
@@ -32,14 +34,6 @@ type HospitalRow = {
   urgency: string;
   createdAt: Date | string;
 };
-
-function formatDate(d: Date | string) {
-  return new Date(d).toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
 
 export function DashboardClient({ email: initialEmail, firstName }: { email: string; firstName: string | null }) {
   const [step, setStep] = useState<Step>('email');
@@ -394,7 +388,7 @@ export function DashboardClient({ email: initialEmail, firstName }: { email: str
                         <p className="text-xs text-muted">{row.department}</p>
                       </td>
                       <td className="py-4 px-6">
-                        <Badge variant={row.urgency === 'Critical' ? 'urgent' : row.urgency === 'Urgent' ? 'featured' : 'teal'}>
+                        <Badge variant={urgencyBadgeVariant(row.urgency)}>
                           {row.urgency}
                         </Badge>
                       </td>

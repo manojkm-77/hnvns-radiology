@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { hasRequiredEnv } from '@/lib/env';
 import { randomUUID } from 'crypto';
 import { checkRateLimit } from '@/lib/ratelimit';
+import { getClientIpFromRequest } from '@/lib/ip';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -12,15 +13,6 @@ const UPLOAD_RATE_WINDOW_MS = 60 * 60 * 1000;
 
 // Strict PDF signature: "%PDF-1." (7 bytes). We read the first 8 to be safe.
 const PDF_SIGNATURE = Buffer.from('%PDF-1.', 'ascii');
-
-function getClientIp(request: Request): string {
-  const xff = request.headers.get('x-forwarded-for');
-  if (xff) {
-    const first = xff.split(',')[0]?.trim();
-    if (first) return first;
-  }
-  return request.headers.get('x-real-ip') ?? 'unknown';
-}
 
 export async function POST(request: Request): Promise<NextResponse> {
   // --- Lightweight auth: require a static upload token ---
@@ -37,7 +29,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   // --- IP rate limiting: 5 uploads / hour ---
-  const ip = getClientIp(request);
+  const ip = getClientIpFromRequest(request);
   if (!checkRateLimit(`upload:${ip}`, UPLOAD_RATE_LIMIT, UPLOAD_RATE_WINDOW_MS)) {
     return NextResponse.json(
       { error: 'Too many uploads. Please wait and try again later.' },

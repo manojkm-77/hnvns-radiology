@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils';
 import { registerCandidateAction } from '@/app/actions/candidate';
 import { getUploadTokenAction } from '@/app/actions/upload';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FormField, inputClassName, selectClassName } from '@/components/ui/FormField';
+import { FormError } from '@/components/ui/FormError';
+import { SuccessScreen } from '@/components/ui/SuccessScreen';
 
 type CandidateRegistrationFormProps = {
   lang?: 'en' | 'kn';
@@ -257,17 +260,11 @@ export function CandidateRegistrationForm({ lang = 'en' }: CandidateRegistration
 
   if (submitted) {
     return (
-      <div className="rounded-[2rem] border border-accent/30 bg-surface p-8 text-center animate-page-fade">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent text-bg">
-          <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        </div>
-        <h3 className="mt-6 text-2xl font-light tracking-[-0.04em] text-text">{t.successTitle}</h3>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted">
-          {t.successSub}
-        </p>
-      </div>
+      <SuccessScreen
+        title={t.successTitle}
+        description={t.successSub}
+        className="animate-page-fade"
+      />
     );
   }
 
@@ -279,89 +276,63 @@ export function CandidateRegistrationForm({ lang = 'en' }: CandidateRegistration
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
-        {/* Full Name */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.fullName}</span>
+        <FormField label={t.fullName} error={errors.fullName}>
           <input value={values.fullName} onChange={(e) => update('fullName', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.fullName ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.fullName)}
             placeholder="Aarav Mehta" />
-          {errors.fullName && <span className="text-xs text-red-300">{errors.fullName}</span>}
-        </label>
+        </FormField>
 
-        {/* Email */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.email}</span>
+        <FormField label={t.email} error={errors.email}>
           <input type="email" value={values.email} onChange={(e) => update('email', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.email ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.email)}
             placeholder="name@example.com" />
-          {errors.email && <span className="text-xs text-red-300">{errors.email}</span>}
-        </label>
+        </FormField>
 
-        {/* Phone */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.phone}</span>
+        <FormField label={t.phone} error={errors.phone}>
           <input value={values.phone} onChange={(e) => update('phone', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.phone ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.phone)}
             placeholder="+91 98765 43210" />
-          {errors.phone && <span className="text-xs text-red-300">{errors.phone}</span>}
-        </label>
+        </FormField>
 
-        {/* Current Location */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.location}</span>
+        <FormField label={t.location} error={errors.location}>
           <input value={values.location} onChange={(e) => update('location', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.location ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.location)}
             placeholder="Bangalore" />
-          {errors.location && <span className="text-xs text-red-300">{errors.location}</span>}
-        </label>
+        </FormField>
 
-        {/* Years of Experience */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.experienceYears}</span>
+        <FormField label={t.experienceYears} error={errors.experienceYears}>
           <input type="number" min="0" value={values.experienceYears} onChange={(e) => update('experienceYears', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.experienceYears ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.experienceYears)}
             placeholder="4" />
-          {errors.experienceYears && <span className="text-xs text-red-300">{errors.experienceYears}</span>}
-        </label>
+        </FormField>
 
-        {/* Specialization */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.specialization}</span>
+        <FormField label={t.specialization} error={errors.specialization}>
           <select value={values.specialization} onChange={(e) => update('specialization', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.specialization ? 'border-red-400/60' : 'border-border')}>
+            className={selectClassName(!!errors.specialization)}>
             <option value="">{t.selectSpec}</option>
             {specializationOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
-          {errors.specialization && <span className="text-xs text-red-300">{errors.specialization}</span>}
-        </label>
+        </FormField>
 
-        {/* Current Employer (optional) */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.currentEmployer} <span className="text-muted/50">{t.optional}</span></span>
+        <FormField label={t.currentEmployer} hint={t.optional}>
           <input value={values.currentEmployer} onChange={(e) => update('currentEmployer', e.target.value)}
-            className="h-12 rounded-2xl border border-border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
+            className={inputClassName(false)}
             placeholder="Apollo Hospitals" />
-        </label>
+        </FormField>
 
-        {/* Expected Salary Range */}
-        <label className="grid gap-2">
-          <span className="text-sm text-muted">{t.salaryRange}</span>
+        <FormField label={t.salaryRange} error={errors.salaryRange}>
           <input value={values.salaryRange} onChange={(e) => update('salaryRange', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.salaryRange ? 'border-red-400/60' : 'border-border')}
+            className={inputClassName(!!errors.salaryRange)}
             placeholder="₹6–9 LPA" />
-          {errors.salaryRange && <span className="text-xs text-red-300">{errors.salaryRange}</span>}
-        </label>
+        </FormField>
 
-        {/* Availability */}
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">{t.availability}</span>
+        <FormField label={t.availability} error={errors.availability} colSpan>
           <select value={values.availability} onChange={(e) => update('availability', e.target.value)}
-            className={cn('h-12 rounded-2xl border bg-bg px-4 text-sm text-muted outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20', errors.availability ? 'border-red-400/60' : 'border-border')}>
+            className={selectClassName(!!errors.availability)}>
             <option value="">{t.selectAvail}</option>
             {availabilityOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
-          {errors.availability && <span className="text-xs text-red-300">{errors.availability}</span>}
-        </label>
+        </FormField>
 
         {/* CV Upload with AI scanner */}
         <div className="grid gap-2 md:col-span-2">
@@ -427,20 +398,14 @@ export function CandidateRegistrationForm({ lang = 'en' }: CandidateRegistration
           {errors.cv && <span className="text-xs text-red-300">{errors.cv}</span>}
         </div>
 
-        {/* Cover Note (optional) */}
-        <label className="grid gap-2 md:col-span-2">
-          <span className="text-sm text-muted">{t.coverNote} <span className="text-muted/50">{t.optional}</span></span>
+        <FormField label={t.coverNote} hint={t.optional} colSpan>
           <textarea value={values.coverNote} onChange={(e) => update('coverNote', e.target.value)}
             className="min-h-32 resize-none rounded-2xl border border-border bg-bg px-4 py-3 text-sm text-text outline-none transition-colors focus:border-accent/80 focus:ring-2 focus:ring-accent/20"
             placeholder={lang === 'kn' ? 'ಲಭ್ಯತೆ, ಪ್ರಮಾಣೀಕರಣಗಳು ಅಥವಾ ಉದ್ಯೋಗ ಆದ್ಯತೆಗಳ ಬಗ್ಗೆ ಹಂಚಿಕೊಳ್ಳಿ' : 'Share anything specific about your availability, certifications, or role preferences'} />
-        </label>
+        </FormField>
       </div>
 
-      {submitError && (
-        <div className="mt-6 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-200">
-          {submitError}
-        </div>
-      )}
+      <FormError message={submitError} />
 
       <div className="mt-8">
         <button type="submit" disabled={isSubmitting || isScanning}
