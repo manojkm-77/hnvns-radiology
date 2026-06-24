@@ -8,13 +8,13 @@
 export const contact = {
   // WhatsApp — digits only, including country code, no '+', spaces, or dashes.
   // Used to build the wa.me deep link.
-  whatsappNumber: '919876543210',
+  whatsappNumber: '916363785364',
 
-  // Human-readable WhatsApp / phone number shown to visitors.
-  whatsappDisplay: '+91 98765 43210',
+  // Human-readable WhatsApp number shown to visitors.
+  whatsappDisplay: '+91 63637 85364',
 
   // Phone number for tel: links (digits with optional '+' prefix).
-  phone: '+919876543210',
+  phone: '+919740222899',
 
   // Primary inbox (also used for mailto: links).
   email: 'hello@hnvns.example',
