@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import { Footer } from '@/components/site/Footer';
 import { Navigation } from '@/components/site/Navigation';
 import { AnnouncementBanner } from '@/components/site/AnnouncementBanner';
+import { Chatbot } from '@/components/site/Chatbot';
+import { WhatsAppButton } from '@/components/site/WhatsAppButton';
 import { PageTransition } from '@/components/animations/PageTransition';
 import { LenisProvider } from '@/providers/LenisProvider';
 import './globals.css';
@@ -40,6 +42,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Navigation />
           <PageTransition>{children}</PageTransition>
           <Footer />
+          <Chatbot />
+          <WhatsAppButton />
         </LenisProvider>
       </body>
     </html>
